@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 from functools import reduce
 
-import pycocotools.mask as maskUtils
+#import pycocotools.mask as maskUtils
 
 from pathlib import Path
 from copy import deepcopy
@@ -81,6 +81,7 @@ def read_single_waymo(obj):
 
 def read_single_waymo_sweep(sweep):
     obj = get_obj(sweep['path'])
+    print('test')
 
     points_xyz = obj["lidars"]["points_xyz"]
     points_feature = obj["lidars"]["points_feature"]
@@ -125,6 +126,7 @@ class LoadPointCloudFromFile(object):
             lidar_path = Path(info["lidar_path"])
             points = read_file(str(lidar_path), virtual=res["virtual"])
 
+
             sweep_points_list = [points]
             sweep_times_list = [np.zeros((points.shape[0], 1))]
 
@@ -153,6 +155,8 @@ class LoadPointCloudFromFile(object):
             obj = get_obj(path)
             points = read_single_waymo(obj)
             res["lidar"]["points"] = points
+            res['cam']['images'] = obj['images']
+            res['calib'] = obj['camera_calibrations']
 
             if nsweeps > 1: 
                 sweep_points_list = [points]
@@ -203,7 +207,21 @@ class LoadPointCloudAnnotations(object):
                 "boxes": info["gt_boxes"].astype(np.float32),
                 "names": info["gt_names"],
             }
+            res['cam']['annotations'] = {
+                "boxes": info['cam_gt_boxes'],
+                "names": info['cam_gt_names'],
+            }
         else:
             pass 
 
         return res, info
+
+@PIPELINES.register_module
+class LoadImageFromFile(object):
+    def __init__(self, with_bbox=True, **kwargs):
+        pass
+
+@PIPELINES.register_module
+class LoadImageAnnotations(object):
+    def __init__(self, with_bbox=True, **kwargs):
+        pass

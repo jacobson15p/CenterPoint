@@ -24,7 +24,11 @@ class Reformat(object):
             metadata=meta
         )
         if points is not None:
-            data_bundle.update(points=points)
+            data_bundle.update(
+                points=points,
+                images=res['cam']['images'],
+                calib=res['calib'],
+            )
 
         if 'voxels' in res["lidar"]:
             voxels = res["lidar"]["voxels"] 

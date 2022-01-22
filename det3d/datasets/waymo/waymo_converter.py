@@ -11,7 +11,7 @@ from __future__ import print_function
 import glob, argparse, tqdm, pickle, os 
 
 import waymo_decoder 
-import tensorflow.compat.v2 as tf
+import tensorflow as tf
 from waymo_open_dataset import dataset_pb2
 
 from multiprocessing import Pool 

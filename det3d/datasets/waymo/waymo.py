@@ -79,7 +79,10 @@ class WaymoDataset(PointCloudDataset):
                 "token": info["token"],
             },
             "calib": None,
-            "cam": {},
+            "cam": {
+                "images": None,
+                "annotations":None,
+            },
             "mode": "val" if self.test_mode else "train",
             "type": "WaymoDataset",
         }

@@ -11,12 +11,14 @@ from __future__ import print_function
 import zlib
 import numpy as np
 
-import tensorflow.compat.v2 as tf
+import tensorflow as tf
 from pyquaternion import Quaternion
 
 from waymo_open_dataset import dataset_pb2
 from waymo_open_dataset.utils import range_image_utils
 from waymo_open_dataset.utils import transform_utils
+from waymo_open_dataset.utils import frame_utils
+
 tf.enable_v2_behavior()
 
 def decode_frame(frame, frame_id):
@@ -37,7 +39,10 @@ def decode_frame(frame, frame_id):
       'frame_name': frame_name,
       'frame_id': frame_id,
       'lidars': lidars,
+      'images': extract_images(frame),
+      'camera_calibrations': extract_calibration(frame),
   }
+
 
   return example_data
   # return encode_tf_example(example_data, FEATURE_SPEC)
@@ -63,6 +68,7 @@ def decode_annos(frame, frame_id):
     'frame_id': frame_id,
     'veh_to_global': veh_to_global,  
     'objects': objects,
+    'camera_labels': extract_boxes(frame),
   }
 
   return annos 
@@ -205,3 +211,122 @@ def extract_objects(laser_labels, global_from_ref_rotation):
             np.array(accel, dtype=np.float32),
     })
   return objects
+
+def extract_boxes(frame):
+  """Extract bounding box labels from images"""
+  
+  objects = {}
+  
+  for c in frame.camera_labels:
+    cam_name_str = dataset_pb2.CameraName.Name.Name(c.name)
+    boxes = []
+    types = []
+    ids = []
+    
+    for l in c.labels:
+      ids.append(l.id)
+      types.append(l.type)
+      boxes.append([l.box.center_x,l.box.center_y,l.box.width,l.box.length])
+    objects[cam_name_str] = {'box':boxes,'type':types,'id':ids}
+
+
+  return objects
+
+def extract_images(frame):
+  """Extract camera images from frame"""
+  
+  data_dict = {}
+  
+  # Save the H x W x 3 RGB image for each camera, extracted from JPEG.
+  for im in frame.images:
+    cam_name_str = dataset_pb2.CameraName.Name.Name(im.name)
+    data_dict[f'{cam_name_str}_IMAGE'] = tf.io.decode_jpeg(im.image).numpy()
+  
+  return data_dict
+
+def extract_calibration(frame):
+  """Extract camera intrinsic and extrinsic matrices"""
+
+  data_dict = {}
+
+  for c in frame.context.camera_calibrations:
+    cam_name_str = dataset_pb2.CameraName.Name.Name(c.name)
+    data_dict[f'{cam_name_str}_INTRINSIC'] = np.array(c.intrinsic, np.float32)
+    data_dict[f'{cam_name_str}_EXTRINSIC'] = np.reshape(
+        np.array(c.extrinsic.transform, np.float32), [4, 4])
+
+  return data_dict
+
+
+def convert_frame_to_dict(frame):
+  """Convert the frame proto into a dict of numpy arrays.
+  The keys, shapes, and data types are:
+    POSE: 4x4 float32 array
+    TIMESTAMP: int64 scalar
+    For each lidar:
+      <LIDAR_NAME>_BEAM_INCLINATION: H float32 array
+      <LIDAR_NAME>_LIDAR_EXTRINSIC: 4x4 float32 array
+      <LIDAR_NAME>_RANGE_IMAGE_FIRST_RETURN: HxWx6 float32 array
+      <LIDAR_NAME>_RANGE_IMAGE_SECOND_RETURN: HxWx6 float32 array
+      <LIDAR_NAME>_CAM_PROJ_FIRST_RETURN: HxWx6 int64 array
+      <LIDAR_NAME>_CAM_PROJ_SECOND_RETURN: HxWx6 float32 array
+      (top lidar only) TOP_RANGE_IMAGE_POSE: HxWx6 float32 array
+    For each camera:
+      <CAMERA_NAME>_IMAGE: HxWx3 uint8 array
+      <CAMERA_NAME>_INTRINSIC: 9 float32 array
+      <CAMERA_NAME>_EXTRINSIC: 4x4 float32 array
+      <CAMERA_NAME>_WIDTH: int64 scalar
+      <CAMERA_NAME>_HEIGHT: int64 scalar
+      <CAMERA_NAME>_SDC_VELOCITY: 6 float32 array
+      <CAMERA_NAME>_POSE: 4x4 float32 array
+      <CAMERA_NAME>_POSE_TIMESTAMP: float32 scalar
+      <CAMERA_NAME>_ROLLING_SHUTTER_DURATION: float32 scalar
+      <CAMERA_NAME>_ROLLING_SHUTTER_DIRECTION: int64 scalar
+      <CAMERA_NAME>_CAMERA_TRIGGER_TIME: float32 scalar
+      <CAMERA_NAME>_CAMERA_READOUT_DONE_TIME: float32 scalar
+  NOTE: This function only works in eager mode for now.
+  See the LaserName.Name and CameraName.Name enums in dataset.proto for the
+  valid lidar and camera name strings that will be present in the returned
+  dictionaries.
+  Args:
+    frame: open dataset frame
+  Returns:
+    Dict from string field name to numpy ndarray.
+  """
+
+  data_dict = {}
+
+  # Save the H x W x 3 RGB image for each camera, extracted from JPEG.
+  for im in frame.images:
+    cam_name_str = dataset_pb2.CameraName.Name.Name(im.name)
+    data_dict[f'{cam_name_str}_IMAGE'] = tf.io.decode_jpeg(im.image).numpy()
+    data_dict[f'{cam_name_str}_SDC_VELOCITY'] = np.array([
+        im.velocity.v_x, im.velocity.v_y, im.velocity.v_z, im.velocity.w_x,
+        im.velocity.w_y, im.velocity.w_z
+    ], np.float32)
+    data_dict[f'{cam_name_str}_POSE'] = np.reshape(
+        np.array(im.pose.transform, np.float32), (4, 4))
+    data_dict[f'{cam_name_str}_POSE_TIMESTAMP'] = np.array(
+        im.pose_timestamp, np.float32)
+    data_dict[f'{cam_name_str}_ROLLING_SHUTTER_DURATION'] = np.array(im.shutter)
+    data_dict[f'{cam_name_str}_CAMERA_TRIGGER_TIME'] = np.array(
+        im.camera_trigger_time)
+    data_dict[f'{cam_name_str}_CAMERA_READOUT_DONE_TIME'] = np.array(
+        im.camera_readout_done_time)
+
+  # Save the intrinsics, 4x4 extrinsic matrix, width, and height of each camera.
+  for c in frame.context.camera_calibrations:
+    cam_name_str = dataset_pb2.CameraName.Name.Name(c.name)
+    data_dict[f'{cam_name_str}_INTRINSIC'] = np.array(c.intrinsic, np.float32)
+    data_dict[f'{cam_name_str}_EXTRINSIC'] = np.reshape(
+        np.array(c.extrinsic.transform, np.float32), [4, 4])
+    data_dict[f'{cam_name_str}_WIDTH'] = np.array(c.width)
+    data_dict[f'{cam_name_str}_HEIGHT'] = np.array(c.height)
+    data_dict[f'{cam_name_str}_ROLLING_SHUTTER_DIRECTION'] = np.array(
+        c.rolling_shutter_direction)
+
+  data_dict['POSE'] = np.reshape(
+      np.array(frame.pose.transform, np.float32), (4, 4))
+  data_dict['TIMESTAMP'] = np.array(frame.timestamp_micros)
+
+  return data_dict

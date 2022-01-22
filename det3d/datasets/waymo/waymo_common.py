@@ -261,7 +261,15 @@ def _fill_infos(root_path, frames, split='train', nsweeps=1):
             annos = ref_obj['objects']
             num_points_in_gt = np.array([ann['num_points'] for ann in annos])
             gt_boxes = np.array([ann['box'] for ann in annos]).reshape(-1, 9)
-            
+            info['cam_gt_boxes'] = {}
+            info['cam_gt_names'] = {}
+            for key in ref_obj['camera_labels'].keys():
+                info['cam_gt_boxes'][key] = ref_obj['camera_labels'][key]['box']
+                info['cam_gt_names'][key] = [] 
+                for l in ref_obj['camera_labels'][key]['type']:
+                    info['cam_gt_names'][key].append(str(TYPE_LIST[l]))
+                info['cam_gt_names'][key] = np.array(info['cam_gt_names'][key]).astype(str)
+                        
             if len(gt_boxes) != 0:
                 # transform from Waymo to KITTI coordinate 
                 # Waymo: x, y, z, length, width, height, rotation from positive x axis clockwisely
