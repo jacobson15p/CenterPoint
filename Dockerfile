@@ -1,14 +1,14 @@
   
 # modified from https://github.com/xfbs/docker-openpcdet
-FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
 # Thiis is an image from the dockerhub published by the offical nvidiagitlab account. 
-# It contains cuda 11.0.3, cudnn8, and ubuntu 18.04
+# It contains cuda 11.1.1, cudnn8, and ubuntu 18.04
 
 RUN apt update
 
-RUN apt install -y python3.6 python3-pip apt-transport-https ca-certificates gnupg software-properties-common wget git ninja-build libboost-dev build-essential
+RUN apt install -y python3.7 python3-pip apt-transport-https ca-certificates gnupg software-properties-common wget git ninja-build libboost-dev build-essential
 
-RUN pip3 install Pillow==6.2.1 torch==1.7.1+cu110 torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip3 install Pillow==6.2.1 torch==1.9.1+cu111 torchvision==0.10.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 
 
 # Install CMake
@@ -17,8 +17,9 @@ RUN apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 RUN apt-get update && apt install -y cmake
 
 # Install spconv
-COPY spconv /code/spconv
-WORKDIR /code/spconv
+RUN git clone -b v1.2.1 https://github.com/traveller59/spconv.git --recursive 
+RUN cd spconv 
+WORKDIR /spconv
 ENV SPCONV_FORCE_BUILD_CUDA=1
 RUN python3 setup.py bdist_wheel
 RUN pip3 install dist/*.whl
