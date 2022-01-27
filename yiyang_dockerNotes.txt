@@ -1,0 +1,4 @@
+1. Pull the current master branch from github
+2. Check that the Dockerfile is in the code
+3. Run: "docker build ." in the /CenterPoint folder (the folder containing the Dockerfile) to download and build the image from this script. 
+4. 
