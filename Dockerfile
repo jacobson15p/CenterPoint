@@ -17,9 +17,9 @@ RUN apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 RUN apt-get update && apt install -y cmake
 
 # Install spconv
+WORKDIR /code
 RUN git clone -b v1.2.1 https://github.com/traveller59/spconv.git --recursive 
-RUN cd spconv 
-WORKDIR /spconv
+WORKDIR /code/spconv
 ENV SPCONV_FORCE_BUILD_CUDA=1
 RUN python3 setup.py bdist_wheel
 RUN pip3 install dist/*.whl
@@ -37,15 +37,16 @@ RUN pip3 install --upgrade pip
 ARG TORCH_CUDA_ARCH_LIST="5.2 6.0 6.1 7.0 7.5+PTX"
 
 # Install CenterPoint
-COPY CenterPoint-dev /code/CenterPoint-dev
-WORKDIR /code/CenterPoint-dev
+COPY ./ /code/CenterPoint/
+WORKDIR /code/CenterPoint
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 0
 RUN pip3 install -r requirements.txt
 RUN pip3 uninstall opencv-python  --yes
 RUN pip3 install opencv-python-headless 
+WORKDIR /code/CenterPoint
 RUN bash setup.sh
 
 RUN chmod -R +777 /code 
 
-WORKDIR /code/CenterPoint-dev
-ENV PYTHONPATH "${PYTHONPATH}:/code/CenterPoint-dev"
+WORKDIR /code/CenterPoint
+ENV PYTHONPATH "${PYTHONPATH}:/code/CenterPoint"

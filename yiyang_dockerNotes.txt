@@ -1,4 +1,20 @@
 1. Pull the current master branch from github
 2. Check that the Dockerfile is in the code
-3. Run: "docker build ." in the /CenterPoint folder (the folder containing the Dockerfile) to download and build the image from this script. 
-4. 
+3. Run: "docker build -t YOURIMAGETAGNAME." in the /CenterPoint folder (the folder containing the Dockerfile) to download and build the image from this script. 
+    There will be lots of warning coming out of the spconv build, but it should be okay
+4. Now the docker image is built. Run: "docker images" or "docker image ls" to check if it is There
+5. Run the image as a container with "docker run --name YOURCONTAINERNAME -i -dp 3000:3000 YOURIMAGETAGNAME"
+6. Start execuation "docker exec -it yiyang_CenterNet bash"
+7. Now you are in the container, ready to run the code. 
+TODO: Add the volume feature note for loading dataset 
+
+
+Extras:
+1. Delete non-tagged images
+"docker rmi $(docker images --filter "dangling=true" -q --no-trunc)"
+
+2. Delete all container
+"docker container prune"
+
+3. Exit a container within the container 
+"exit" 
