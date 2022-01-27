@@ -3,7 +3,8 @@
 3. Run: "docker build -t YOURIMAGETAGNAME." in the /CenterPoint folder (the folder containing the Dockerfile) to download and build the image from this script. 
     There will be lots of warning coming out of the spconv build, but it should be okay
 4. Now the docker image is built. Run: "docker images" or "docker image ls" to check if it is There
-5. Run the image as a container with "docker run --name YOURCONTAINERNAME -i -dp 3000:3000 YOURIMAGETAGNAME"
+5. Run the image as a container with "docker run --name YOURCONTAINERNAME -v YOURDATALOCATION:/waymo_data -i -dp 3000:3000 YOURIMAGETAGNAME
+    You can access the data in container by cd ../waymo_data
 6. Start execuation "docker exec -it yiyang_CenterNet bash"
 7. Now you are in the container, ready to run the code. 
 TODO: Add the volume feature note for loading dataset 
@@ -15,6 +16,9 @@ Extras:
 
 2. Delete all container
 "docker container prune"
+
+2. Stop a container
+"docker container stop CONTAINERID"
 
 3. Exit a container within the container 
 "exit" 
