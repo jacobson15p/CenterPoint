@@ -34,8 +34,6 @@ RUN ln -s /usr/bin/llvm-config-10 /usr/bin/llvm-config
 
 RUN pip3 install --upgrade pip
 
-ARG TORCH_CUDA_ARCH_LIST="5.2 6.0 6.1 7.0 7.5+PTX"
-
 # Install CenterPoint Requirements
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 0
 COPY ./requirements.txt /code/requirements_install.txt
