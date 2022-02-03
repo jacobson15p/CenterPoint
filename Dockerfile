@@ -36,17 +36,14 @@ RUN pip3 install --upgrade pip
 
 ARG TORCH_CUDA_ARCH_LIST="5.2 6.0 6.1 7.0 7.5+PTX"
 
-# Install CenterPoint
-COPY ./ /code/CenterPoint/
-WORKDIR /code/CenterPoint
+# Install CenterPoint Requirements
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 0
-RUN pip3 install -r requirements.txt
+COPY ./requirements.txt /code/requirements_install.txt
+RUN pip3 install -r /code/requirements_install.txt
 RUN pip3 uninstall opencv-python  --yes
 RUN pip3 install opencv-python-headless 
-WORKDIR /code/CenterPoint
-RUN bash setup.sh
+RUN rm /code/requirements_install.txt
 
 RUN chmod -R +777 /code 
 
-WORKDIR /code/CenterPoint
 ENV PYTHONPATH "${PYTHONPATH}:/code/CenterPoint"
