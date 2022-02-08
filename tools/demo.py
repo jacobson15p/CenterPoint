@@ -52,13 +52,13 @@ def convert_box(info):
     return detection 
 
 def main():
-    cfg = Config.fromfile('configs/waymo/pp/waymo_centerpoint_voxelnet_1x.py')
+    cfg = Config.fromfile('/code/CenterPoint/configs/waymo/2D/waymo_centernet_dla34.py')
     
-    #model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
+    model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
 
     dataset = build_dataset(cfg.data.val)
 
-    '''
+    
     data_loader = DataLoader(
         dataset,
         batch_size=1,
@@ -69,6 +69,12 @@ def main():
         pin_memory=False,
     )
 
+    for x in data_loader:
+        print(x.keys())
+        #print(model.forward(np.asarray(x['images'][0]['FRONT_IMAGE'])).shape)
+        break
+
+    '''
     checkpoint = load_checkpoint(model, 'work_dirs/centerpoint_pillar_512_demo/latest.pth', map_location="cpu")
     model.eval()
 

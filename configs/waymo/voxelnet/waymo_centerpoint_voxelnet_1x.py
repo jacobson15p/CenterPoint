@@ -77,12 +77,12 @@ test_cfg = dict(
 # dataset settings
 dataset_type = "WaymoDataset"
 nsweeps = 1
-data_root = "/media/msc/8TB/philip/CenterFusion/Waymo/waymo_sample"
+data_root = "/media/msc/8TB/philip/CenterFusion/waymo_sample"
 
 db_sampler = dict(
     type="GT-AUG",
     enable=False,
-    db_info_path="/media/msc/8TB/philip/CenterFusion/Waymo/waymo_sample/infos_val_01sweeps_filter_zero_gt.pkl",
+    db_info_path="/media/msc/8TB/philip/CenterFusion/waymo_sample/infos_val_01sweeps_filter_zero_gt.pkl",
     sample_groups=[
         dict(VEHICLE=15),
         dict(PEDESTRIAN=10),
@@ -140,7 +140,7 @@ test_pipeline = [
     dict(type="Reformat"),
 ]
 
-train_anno = "data/Waymo/infos_train_01sweeps_filter_zero_gt.pkl"
+train_anno = "/media/msc/8TB/philip/CenterFusion/Waymo/waymo_sample/infos_train_01sweeps_filter_zero_gt.pkl"
 val_anno = "/media/msc/8TB/philip/CenterFusion/Waymo/waymo_sample/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = None
 

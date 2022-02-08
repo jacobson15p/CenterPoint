@@ -13,7 +13,7 @@ import torch
 import yaml
 from det3d import torchie
 from det3d.datasets import build_dataloader, build_dataset
-#from det3d.models import build_detector
+from det3d.models import build_detector
 from det3d.torchie import Config
 from det3d.torchie.apis import (
     batch_processor,
@@ -52,9 +52,9 @@ def convert_box(info):
     return detection 
 
 def main():
-    cfg = Config.fromfile('configs/waymo/voxelnet/waymo_centerpoint_voxelnet_1x.py')
+    cfg = Config.fromfile('configs/waymo/2D/waymo_centernet_dla34.py')
     
-    #model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
+    model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
 
     dataset = build_dataset(cfg.data.val)
 
@@ -70,7 +70,7 @@ def main():
     )
 
     for x in data_loader:
-        print(x['calib'])
+        #print(x['images'])
         break
 
     '''

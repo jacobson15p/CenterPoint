@@ -3,13 +3,12 @@
 3. Run: "docker build -t YOURIMAGETAGNAME ." in the /CenterPoint folder (the folder containing the Dockerfile) to download and build the image from this script. 
     There will be lots of warning coming out of the spconv build, but it should be okay
 4. Now the docker image is built. Run: "docker images" or "docker image ls" to check if it is There
-5. Run the image as a container with "docker run --name YOURCONTAINERNAME -v YOURDATALOCATION:/waymo_data -v YOURCENTERNETLOCATION:/code/CenterPoint -i -dp 3000:3000 --shm-size 16G YOURIMAGETAGNAME "
+5. Run the image as a container with "docker run --name centerfusion-container -v /media/msc/8TB/philip/CenterFusion/Waymo/waymo_sample:/waymo_data -v /media/msc/8TB/philip/CenterFusion/CenterPoint:/code/CenterPoint -i -dp 3000:3000 --gpus all --shm-size 16G centernet_image "
     You can access the data in container by cd ../waymo_data
-6. Start execuation "docker exec -it YOURCONTAINERNAME bash"
+6. Start execuation "docker exec -it centerfusion-container bash"
 7. Now you are in the container.
-8. run this command to set CUDA: export TORCH_CUDA_ARCH_LIST="5.2 6.0 6.1 7.0 7.5+PTX"
-9. For the first time in your container, run "bash setup.py". You do not need to setup this multiple times as the build is performed on the PC not the container. 
- 
+8. For the first time in your container, run "bash setup.py". You do not need to setup this multiple times as the build is performed on the PC not the container. 
+9. Run all the python files with python3.6 command 
 
 Suggestions:
 Use a Visual Code docker extension to help yourself. 
