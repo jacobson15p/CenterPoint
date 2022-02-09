@@ -2,7 +2,7 @@ import importlib
 spconv_spec = importlib.util.find_spec("spconv")
 found = spconv_spec is not None
 
-from .dlav0 import DLA
+from .dlav0 import DLA,DLASeg
 if found:
     from .scn import SpMiddleResNetFHD
 else:

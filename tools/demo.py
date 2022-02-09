@@ -70,8 +70,8 @@ def main():
     )
 
     for x in data_loader:
-        print(x.keys())
-        #print(model.forward(np.asarray(x['images'][0]['FRONT_IMAGE'])).shape)
+        #print(x.keys())
+        print(model.forward(np.asarray(x['images'][0]['FRONT_IMAGE']),return_loss=False))
         break
 
     '''
