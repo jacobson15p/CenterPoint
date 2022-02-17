@@ -200,7 +200,7 @@ log_config = dict(
 )
 # yapf:enable
 # runtime settings
-total_epochs = 12
+total_epochs = 1
 device_ids = range(8)
 dist_params = dict(backend="nccl", init_method="env://")
 log_level = "INFO"

@@ -185,6 +185,8 @@ class BaseHead(nn.Module):
 
     if return_loss:
       pred_dict = image_or_path_or_tensor
+      print(output['hm'].shape,pred_dict['hm_cam'][0].shape, pred_dict['ind_cam'][0].shape,
+        pred_dict['mask_cam'][0].shape, pred_dict['cat_cam'][0].shape)
       hm_loss = self.crit(output['hm'], pred_dict['hm_cam'][0], pred_dict['ind_cam'][0],
         pred_dict['mask_cam'][0], pred_dict['cat_cam'][0])
       dep_loss = self.crit_reg(output['dep'], pred_dict['mask_cam'][0], pred_dict['ind_cam'][0],
@@ -197,6 +199,10 @@ class BaseHead(nn.Module):
     else:
       return {'results': results, }
 
+
+  def forward_two_stage(self, image_or_path_or_tensor, return_loss = True, meta=None):
+
+    return None 
 
 @DETECTORS.register_module
 class DddHead(BaseHead):

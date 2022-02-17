@@ -68,7 +68,6 @@ def parse_second_losses(losses):
 
     log_vars = OrderedDict()
     loss = sum(losses["loss"])
-    print(losses)
     for loss_name, loss_value in losses.items():
         if loss_name == "loc_loss_elem":
             log_vars[loss_name] = [[i.item() for i in j] for j in loss_value]

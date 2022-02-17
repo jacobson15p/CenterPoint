@@ -496,7 +496,8 @@ class AssignLabel(object):
             for cam in cameras:
                 if res['cam']['annotations']['boxes'][cam] != []:
                     gt_boxes_cam[cam] = np.hstack((np.array(res['cam']['annotations']['boxes'][cam]),np.array([[class_names_by_task[0].index(n) for n in res['cam']['annotations']['names'][cam]]]).T))
-            gt_boxes_cam = gt_boxes_cam['FRONT'] #only using front camera for now
+            if 'FRONT' in gt_boxes_cam.keys():
+                gt_boxes_cam = gt_boxes_cam['FRONT'] #only using front camera for now
             example.update({'gt_boxes_and_cls': gt_boxes_and_cls})
 
             example.update({'hm': hms, 'anno_box': anno_boxs, 'ind': inds, 'mask': masks, 'cat': cats, 'gt_boxes_cam': gt_boxes_cam, 'hm_cam': hms_cam, 'ind_cam': inds_cam, 'mask_cam': masks_cam,

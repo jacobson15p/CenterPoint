@@ -256,6 +256,8 @@ class CenterHead(nn.Module):
             # heatmap focal loss
             preds_dict['hm'] = self._sigmoid(preds_dict['hm'])
 
+            print(preds_dict['hm'].shape,example['hm'][task_id].shape, example['ind'][task_id].shape, example['mask'][task_id].shape, example['cat'][task_id].shape)
+
             hm_loss = self.crit(preds_dict['hm'], example['hm'][task_id], example['ind'][task_id], example['mask'][task_id], example['cat'][task_id])
             #ind (batch x max_objects) get the object location, and only work with the category 
 
