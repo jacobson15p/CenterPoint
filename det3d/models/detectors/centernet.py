@@ -64,9 +64,10 @@ def get_affine_transform(center,
 
     return trans
 
-class BaseHead(object):
+class BaseHead(nn.Module):
   def __init__(self, tasks, backbone, train_cfg=None, test_cfg=None):
     
+    super(BaseHead, self).__init__()
     print('Creating model...')
     self.model = builder.build_backbone(backbone)
 
@@ -135,6 +136,8 @@ class BaseHead(object):
       image = image_or_path_or_tensor
     elif type(image_or_path_or_tensor) == type (''): 
       image = cv2.imread(image_or_path_or_tensor)
+    elif isinstance(image_or_path_or_tensor, dict):
+      image = image_or_path_or_tensor['images'][0]
     else:
       image = image_or_path_or_tensor['image'][0].numpy()
       pre_processed_images = image_or_path_or_tensor
@@ -181,12 +184,15 @@ class BaseHead(object):
     tot_time += end_time - start_time
 
     if return_loss:
-      #hm_loss = self.crit(output['hm'], )
-      #dep_loss = self.crit_reg(output['dep'], )
+      pred_dict = image_or_path_or_tensor
+      hm_loss = self.crit(output['hm'], pred_dict['hm_cam'][0], pred_dict['ind_cam'][0],
+        pred_dict['mask_cam'][0], pred_dict['cat_cam'][0])
+      dep_loss = self.crit_reg(output['dep'], pred_dict['mask_cam'][0], pred_dict['ind_cam'][0],
+        pred_dict['dep'][0].unsqueeze(-1))
 
-      #loss = 0.5*hm_loss + 0.5*dep_loss
+      loss = hm_loss + dep_loss
 
-      return 0
+      return {'loss': loss.detach().cpu(), 'hm_loss': hm_loss.detach().cpu(), 'dep_loss': dep_loss.detach().cpu(),}
 
     else:
       return {'results': results, }
@@ -212,16 +218,16 @@ class DddHead(BaseHead):
     #  s = np.array([width, height], dtype=np.int32)
 
     trans_input = get_affine_transform(c, s, 0, [inp_width, inp_height])
-    resized_image = image #cv2.resize(image, (width, height))
-    inp_image = cv2.warpAffine(
-      resized_image, trans_input, (inp_width, inp_height),
-      flags=cv2.INTER_LINEAR)
-    inp_image = (inp_image.astype(np.float32) / 255.)
-    inp_image = (inp_image - self.mean) / self.std
-    images = inp_image.transpose(2, 0, 1)[np.newaxis, ...]
+    images = image #cv2.resize(image, (width, height))
+    #inp_image = cv2.warpAffine(
+    #  resized_image, trans_input, (inp_width, inp_height),
+    #  flags=cv2.INTER_LINEAR)
+    #inp_image = (inp_image / 255.)
+    #inp_image = (inp_image - self.mean) / self.std
+    #images = inp_image.transpose(2, 0, 1).unsqueeze(0)
     calib = np.array(calib, dtype=np.float32) if calib is not None \
             else self.calib
-    images = torch.from_numpy(images)
+    #images = torch.from_numpy(images)
     meta = {'c': c, 's': s, 
             'out_height': inp_height // self.down_ratio, 
             'out_width': inp_width // self.down_ratio,
@@ -232,7 +238,6 @@ class DddHead(BaseHead):
     with torch.no_grad():
       torch.cuda.synchronize()
       output = self.model(images)[-1]
-      print(type(output))
       output['hm'] = output['hm'].sigmoid_()
       output['dep'] = 1. / (output['dep'].sigmoid() + 1e-6) - 1.
       #wh = output['wh'] #if self.opt.reg_bbox else None

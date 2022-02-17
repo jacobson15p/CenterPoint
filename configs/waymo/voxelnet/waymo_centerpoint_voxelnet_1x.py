@@ -52,6 +52,7 @@ assigner = dict(
     gaussian_overlap=0.1,
     max_objs=500,
     min_radius=2,
+    cam_down_ratio=4,
 )
 
 
@@ -77,12 +78,12 @@ test_cfg = dict(
 # dataset settings
 dataset_type = "WaymoDataset"
 nsweeps = 1
-data_root = "/media/msc/8TB/philip/CenterFusion/waymo_sample"
+data_root = "/waymo_data"
 
 db_sampler = dict(
     type="GT-AUG",
     enable=False,
-    db_info_path="/media/msc/8TB/philip/CenterFusion/waymo_sample/infos_val_01sweeps_filter_zero_gt.pkl",
+    db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
         dict(PEDESTRIAN=10),
@@ -139,9 +140,8 @@ test_pipeline = [
     dict(type="AssignLabel", cfg=train_cfg["assigner"]),
     dict(type="Reformat"),
 ]
-
-train_anno = "/media/msc/8TB/philip/CenterFusion/Waymo/waymo_sample/infos_train_01sweeps_filter_zero_gt.pkl"
-val_anno = "/media/msc/8TB/philip/CenterFusion/Waymo/waymo_sample/infos_val_01sweeps_filter_zero_gt.pkl"
+train_anno = "/waymo_data/infos_train_01sweeps_filter_zero_gt.pkl"
+val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = None
 
 data = dict(

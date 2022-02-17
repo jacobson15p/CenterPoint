@@ -210,6 +210,7 @@ class LoadPointCloudAnnotations(object):
             res['cam']['annotations'] = {
                 "boxes": info['cam_gt_boxes'],
                 "names": info['cam_gt_names'],
+                "depth_map": info['depth_map']
             }
         else:
             pass 

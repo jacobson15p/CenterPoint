@@ -12,10 +12,11 @@ class BEVFeatureExtractor(nn.Module):
             voxel_size, out_stride):
         super().__init__()
         self.pc_start = pc_start 
-        self.voxel_size = voxel_size
+        self.voxel_size = voxel_size # in terms of meter per pixel 
         self.out_stride = out_stride
 
     def absl_to_relative(self, absolute):
+        # Going from absolute meter scale to relative pixel scale, 
         a1 = (absolute[..., 0] - self.pc_start[0]) / self.voxel_size[0] / self.out_stride 
         a2 = (absolute[..., 1] - self.pc_start[1]) / self.voxel_size[1] / self.out_stride 
 

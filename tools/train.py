@@ -69,13 +69,14 @@ def main():
     args = parse_args()
 
     cfg = Config.fromfile(args.config)
-    cfg.local_rank = args.local_rank
+    cfg.local_rank = args.local_rank #For distributed learning 
 
     # update configs according to CLI args
     if args.work_dir is not None:
         cfg.work_dir = args.work_dir
     if args.resume_from is not None:
         cfg.resume_from = args.resume_from
+
 
     distributed = False
     if "WORLD_SIZE" in os.environ:
@@ -85,7 +86,7 @@ def main():
         torch.cuda.set_device(args.local_rank)
         torch.distributed.init_process_group(backend="nccl", init_method="env://")
 
-        cfg.gpus = torch.distributed.get_world_size()
+        cfg.gpus = torch.distributed.get_world_size() # The --gpus argument is not really being used here. 
 
     if args.autoscale_lr:
         cfg.lr_config.lr_max = cfg.lr_config.lr_max * cfg.gpus

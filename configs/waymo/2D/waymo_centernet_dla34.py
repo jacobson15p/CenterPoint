@@ -15,27 +15,13 @@ target_assigner = dict(
 )
 
 # model settings
-'''
-model = dict(
-    type="dla34",
-    pretrained=None,
-    bbox_head=dict(
-        type="DddHead",
-        tasks=tasks,
-        backbone=dict(
-            type="DLA",
-            levels=[1, 1, 1, 2, 2, 1],
-            channels=[16, 32, 64, 128, 256, 512],),
-    ),
-) 
-'''
 model = dict(
     type="DddHead",
     tasks=tasks,
     backbone=dict(
         type="DLASeg",
         base_name='dla34',
-        heads={'hm': 3,'dep': 1},
+        heads={'hm': 3,'dep': 1,'wh': 2},
         down_ratio=4,
         head_conv=256,),
 )
@@ -47,6 +33,7 @@ assigner = dict(
     gaussian_overlap=0.1,
     max_objs=500,
     min_radius=2,
+    cam_down_ratio=model['backbone']['down_ratio'],
 )
 
 
@@ -77,10 +64,10 @@ data_root = "/waymo_data"
 db_sampler = dict(
     type="GT-AUG",
     enable=False,
-    db_info_path="/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl",
+    db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
-        dict(PEDESTRIAN=10),
+        dict(PEDESTRIAN=0),
         dict(CYCLIST=10),
     ],
     db_prep_steps=[

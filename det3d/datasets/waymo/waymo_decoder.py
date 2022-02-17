@@ -19,6 +19,8 @@ from waymo_open_dataset.utils import range_image_utils
 from waymo_open_dataset.utils import transform_utils
 from waymo_open_dataset.utils import frame_utils
 
+from scipy.interpolate import griddata
+
 tf.enable_v2_behavior()
 
 def decode_frame(frame, frame_id):
@@ -69,6 +71,7 @@ def decode_annos(frame, frame_id):
     'veh_to_global': veh_to_global,  
     'objects': objects,
     'camera_labels': extract_boxes(frame),
+    'depth_map': extract_depth_map(frame),
   }
 
   return annos 
@@ -213,7 +216,11 @@ def extract_objects(laser_labels, global_from_ref_rotation):
   return objects
 
 def extract_boxes(frame):
-  """Extract bounding box labels from images"""
+  """Extract bounding box labels from images
+        boxes: x,y,w,h
+        types: class ID
+        id: Object ID
+  """
   
   objects = {}
   
@@ -228,21 +235,18 @@ def extract_boxes(frame):
       types.append(l.type)
       boxes.append([l.box.center_x,l.box.center_y,l.box.width,l.box.length])
     objects[cam_name_str] = {'box':boxes,'type':types,'id':ids}
-
-
   return objects
 
 def extract_images(frame):
   """Extract camera images from frame"""
   
-  data_dict = {}
   
   # Save the H x W x 3 RGB image for each camera, extracted from JPEG.
   for im in frame.images:
-    cam_name_str = dataset_pb2.CameraName.Name.Name(im.name)
-    data_dict[f'{cam_name_str}_IMAGE'] = tf.io.decode_jpeg(im.image).numpy()
-  
-  return data_dict
+    if dataset_pb2.CameraName.Name.Name(im.name) == 'FRONT':
+      return tf.io.decode_jpeg(im.image).numpy()
+
+  return []
 
 def extract_calibration(frame):
   """Extract camera intrinsic and extrinsic matrices"""
@@ -330,3 +334,42 @@ def convert_frame_to_dict(frame):
   data_dict['TIMESTAMP'] = np.array(frame.timestamp_micros)
 
   return data_dict
+
+
+def extract_depth_map(frame):
+  """
+  Extract front-view lidar camera projection for ground-truth depth maps
+  """
+  (range_images, camera_projections, range_image_top_pose) = frame_utils.parse_range_image_and_camera_projection(frame)
+  points, cp_points = frame_utils.convert_range_image_to_point_cloud(
+    frame,
+    range_images,
+    camera_projections,
+    range_image_top_pose)
+  points_all = np.concatenate(points, axis=0)
+  cp_points_all = np.concatenate(cp_points, axis=0)
+  images = sorted(frame.images, key=lambda i:i.name)
+
+  # The distance between lidar points and vehicle frame origin.
+  points_all_tensor = tf.norm(points_all, axis=-1, keepdims=True)
+  cp_points_all_tensor = tf.constant(cp_points_all, dtype=tf.int32)
+
+  mask = tf.equal(cp_points_all_tensor[..., 0], images[0].name)
+
+  cp_points_all_tensor = tf.cast(tf.gather_nd(
+      cp_points_all_tensor, tf.where(mask)), dtype=tf.float32)
+  points_all_tensor = tf.gather_nd(points_all_tensor, tf.where(mask))
+
+  projected_points_all_from_raw_data = tf.concat(
+      [cp_points_all_tensor[..., 1:3], points_all_tensor], axis=-1).numpy()
+  projected_points_all_from_raw_data[:,2] = projected_points_all_from_raw_data[:,2]/max(projected_points_all_from_raw_data[:,2])
+  depth_map = np.ones((1920,1280))
+  min_h = int(min(projected_points_all_from_raw_data[:,1]))
+  max_h = int(max(projected_points_all_from_raw_data[:,1]))
+  min_w = int(min(projected_points_all_from_raw_data[:,0]))
+  max_w = int(max(projected_points_all_from_raw_data[:,0]))
+  grid_w,grid_h = np.mgrid[min_w:max_w,min_h:max_h]
+  depth_vals = griddata(projected_points_all_from_raw_data[:,0:2],projected_points_all_from_raw_data[:,2],(grid_w,grid_h),method='linear')
+  depth_map[min_w:max_w,min_h:max_h] = depth_vals
+
+  return depth_map[0:1920:4,0:1280:4].T

@@ -155,6 +155,14 @@ class Preprocess(object):
         if self.mode == "train":
             res["lidar"]["annotations"] = gt_dict
 
+        #Preprocess images
+        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 1, 3)
+        std = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(1, 1, 3)
+
+        
+        res['cam']['images'] = ((res['cam']['images']/ 255. - mean)/std).astype(np.float32)
+        res['cam']['images'] = res['cam']['images'].transpose(2, 0, 1)[np.newaxis,...]
+
         return res, info
 
 
@@ -281,6 +289,7 @@ class AssignLabel(object):
         self._max_objs = assigner_cfg.max_objs
         self._min_radius = assigner_cfg.min_radius
         self.cfg = assigner_cfg
+        self.camera_out_size_factor = assigner_cfg.cam_down_ratio
 
     def __call__(self, res, info):
         max_objs = self._max_objs
@@ -304,6 +313,7 @@ class AssignLabel(object):
                 grid_size = np.round(grid_size).astype(np.int64)
 
             feature_map_size = grid_size[:2] // self.out_size_factor
+            cam_feature_map_size = tuple(d// self.camera_out_size_factor for d in res['cam']['images'].shape[2:])
 
             gt_dict = res["lidar"]["annotations"]
 
@@ -353,10 +363,14 @@ class AssignLabel(object):
 
             draw_gaussian = draw_umich_gaussian
 
-            hms, anno_boxs, inds, masks, cats = [], [], [], [], []
+            cameras = res['cam']['annotations']['boxes'].keys()
+
+            hms, anno_boxs, inds, masks, cats, hms_cam, inds_cam, masks_cam, cats_cam, deps = [], [], [], [], [], [], [], [], [], []
 
             for idx, task in enumerate(self.tasks):
                 hm = np.zeros((len(class_names_by_task[idx]), feature_map_size[1], feature_map_size[0]),
+                              dtype=np.float32)
+                hm_cam = np.zeros((len(class_names_by_task[idx]), cam_feature_map_size[0], cam_feature_map_size[1]),
                               dtype=np.float32)
 
                 if res['type'] == 'NuScenesDataset':
@@ -371,7 +385,32 @@ class AssignLabel(object):
                 mask = np.zeros((max_objs), dtype=np.uint8)
                 cat = np.zeros((max_objs), dtype=np.int64)
 
+                ind_cam = np.zeros((max_objs), dtype=np.int64)
+                mask_cam = np.zeros((max_objs), dtype=np.uint8)
+                cat_cam = np.zeros((max_objs), dtype=np.int64)
+                dep = np.zeros((max_objs), dtype=np.float32)
+
+
                 num_objs = min(gt_dict['gt_boxes'][idx].shape[0], max_objs)  
+                num_objs_cam = min(len(res['cam']['annotations']['boxes']['FRONT']), max_objs)
+
+                for k in range(num_objs_cam):
+                    cls_id = class_names_by_task[0].index(res['cam']['annotations']['names']['FRONT'][k])
+                    w,h = res['cam']['annotations']['boxes']['FRONT'][k][2:]
+                    if h > 0 and w > 0:
+                        radius = gaussian_radius((h,w))
+                        radius = max(0, int(radius))
+
+                        ct = np.array(
+                            res['cam']['annotations']['boxes']['FRONT'][k][:2],dtype=np.float32
+                        )/self.camera_out_size_factor
+                        ct_int = ct.astype(np.int32)
+
+                        draw_gaussian(hm_cam[cls_id], ct, radius)
+                        ind_cam[k] = ct_int[0] * cam_feature_map_size[0] + ct_int[1]
+                        mask_cam[k] = 1 
+                        cat_cam[k] = cls_id
+                        dep[k] = res['cam']['annotations']['depth_map'][ct_int[1]][ct_int[0]]
 
                 for k in range(num_objs):
                     cls_id = gt_dict['gt_classes'][idx][k] - 1
@@ -421,12 +460,17 @@ class AssignLabel(object):
                             np.array(vx), np.array(vy), np.sin(rot), np.cos(rot)), axis=None)
                         else:
                             raise NotImplementedError("Only Support Waymo and nuScene for Now")
-
+                            
                 hms.append(hm)
                 anno_boxs.append(anno_box)
                 masks.append(mask)
                 inds.append(ind)
                 cats.append(cat)
+                hms_cam.append(hm_cam)
+                inds_cam.append(ind_cam)
+                masks_cam.append(mask_cam)
+                cats_cam.append(cat_cam)
+                deps.append(dep)
 
             # used for two stage code 
             boxes = flatten(gt_dict['gt_boxes'])
@@ -447,9 +491,16 @@ class AssignLabel(object):
             boxes_and_cls = boxes_and_cls[:, [0, 1, 2, 3, 4, 5, 8, 6, 7, 9]]
             gt_boxes_and_cls[:num_obj] = boxes_and_cls
 
+            #Reformat camera labels into x, y, w, h, class_name
+            gt_boxes_cam = {}
+            for cam in cameras:
+                if res['cam']['annotations']['boxes'][cam] != []:
+                    gt_boxes_cam[cam] = np.hstack((np.array(res['cam']['annotations']['boxes'][cam]),np.array([[class_names_by_task[0].index(n) for n in res['cam']['annotations']['names'][cam]]]).T))
+            gt_boxes_cam = gt_boxes_cam['FRONT'] #only using front camera for now
             example.update({'gt_boxes_and_cls': gt_boxes_and_cls})
 
-            example.update({'hm': hms, 'anno_box': anno_boxs, 'ind': inds, 'mask': masks, 'cat': cats})
+            example.update({'hm': hms, 'anno_box': anno_boxs, 'ind': inds, 'mask': masks, 'cat': cats, 'gt_boxes_cam': gt_boxes_cam, 'hm_cam': hms_cam, 'ind_cam': inds_cam, 'mask_cam': masks_cam,
+                'cat_cam': cats_cam, 'dep': deps})
         else:
             pass
 

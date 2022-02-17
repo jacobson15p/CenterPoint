@@ -36,7 +36,8 @@ def example_to_device(example, device, non_blocking=False) -> dict:
     float_names = ["voxels", "bev_map"]
     for k, v in example.items():
         if k in ["anchors", "anchors_mask", "reg_targets", "reg_weights", "labels", "hm",
-                "anno_box", "ind", "mask", 'cat', 'points']:
+                "anno_box", "ind", "mask", 'cat', 'points','hm_cam','ind_cam','mask_cam',
+                'cat_cam','dep']:
             example_torch[k] = [res.to(device, non_blocking=non_blocking) for res in v]
         elif k in [
             "voxels",
@@ -48,7 +49,8 @@ def example_to_device(example, device, non_blocking=False) -> dict:
             "cyv_num_voxels",
             "cyv_coordinates",
             "cyv_num_points",
-            "gt_boxes_and_cls"
+            "gt_boxes_and_cls",
+            "images"
         ]:
             example_torch[k] = v.to(device, non_blocking=non_blocking)
         elif k == "calib":
@@ -66,6 +68,7 @@ def parse_second_losses(losses):
 
     log_vars = OrderedDict()
     loss = sum(losses["loss"])
+    print(losses)
     for loss_name, loss_value in losses.items():
         if loss_name == "loc_loss_elem":
             log_vars[loss_name] = [[i.item() for i in j] for j in loss_value]

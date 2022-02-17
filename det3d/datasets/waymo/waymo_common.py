@@ -284,6 +284,9 @@ def _fill_infos(root_path, frames, split='train', nsweeps=1):
             info['gt_boxes'] = gt_boxes[mask_not_zero, :].astype(np.float32)
             info['gt_names'] = gt_names[mask_not_zero].astype(str)
 
+            #get ground truth depth maps
+            info['depth_map'] = ref_obj['depth_map']
+
         infos.append(info)
     return infos
 

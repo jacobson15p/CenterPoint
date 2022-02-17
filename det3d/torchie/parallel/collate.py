@@ -124,6 +124,8 @@ def collate_kitti(batch_list, samples_per_gpu=1):
             ret[key] = res
         elif key == "metadata":
             ret[key] = elems
+        elif key == "gt_boxes_cam":
+            ret[key] = elems
         elif key == "calib":
             ret[key] = {}
             for elem in elems:
@@ -155,7 +157,7 @@ def collate_kitti(batch_list, samples_per_gpu=1):
             for kk, vv in ret[key].items():
                 res.append(torch.stack(vv))
             ret[key] = res
-        elif key == 'gt_boxes_and_cls':
+        elif key in ['images', 'gt_boxes_and_cls', "hm_cam", "ind_cam", "mask_cam", "cat_cam", "dep"]:
             ret[key] = torch.tensor(np.stack(elems, axis=0))
         else:
             ret[key] = np.stack(elems, axis=0)

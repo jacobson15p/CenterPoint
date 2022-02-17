@@ -56,7 +56,7 @@ def main():
     
     model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
 
-    dataset = build_dataset(cfg.data.val)
+    dataset = build_dataset(cfg.data.train)
 
     
     data_loader = DataLoader(
@@ -70,10 +70,10 @@ def main():
     )
 
     for x in data_loader:
-        #print(x.keys())
-        print(model.forward(np.asarray(x['images'][0]['FRONT_IMAGE']),return_loss=False))
+        #print(x['hm_cam'].shape)
+        print(model(x,return_loss=True))
         break
-
+    
     '''
     checkpoint = load_checkpoint(model, 'work_dirs/centerpoint_pillar_512_demo/latest.pth', map_location="cpu")
     model.eval()

@@ -65,7 +65,7 @@ class FeatureAdaption(nn.Module):
 class SepHead(nn.Module):
     def __init__(
         self,
-        in_channels,
+        in_channels, #share_channels means the last layer before they seperate, YZ Notes 
         heads,
         head_conv=64,
         final_kernel=1,
@@ -80,7 +80,7 @@ class SepHead(nn.Module):
             classes, num_conv = self.heads[head]
 
             fc = Sequential()
-            for i in range(num_conv-1):
+            for i in range(num_conv-1): #Twice, 0, 1 
                 fc.add(nn.Conv2d(in_channels, head_conv,
                     kernel_size=final_kernel, stride=1, 
                     padding=final_kernel // 2, bias=True))
@@ -194,6 +194,9 @@ class CenterHead(nn.Module):
         self.crit = FastFocalLoss()
         self.crit_reg = RegLoss()
 
+        # YZ Notes 
+        # common_heads is the 
+        # common_heads={'reg': (2, 2), 'height': (1, 2), 'dim':(3, 2), 'rot':(2, 2), 'vel':(2,2)}, # (output_channel, num_conv)
         self.box_n_dim = 9 if 'vel' in common_heads else 7  
         self.use_direction_classifier = False 
 
@@ -213,16 +216,16 @@ class CenterHead(nn.Module):
             nn.ReLU(inplace=True)
         )
 
-        self.tasks = nn.ModuleList()
+        self.tasks = nn.ModuleList() # YZ Notes, different from the task list, this is a module list for training purposes. 
         print("Use HM Bias: ", init_bias)
 
         if dcn_head:
             print("Use Deformable Convolution in the CenterHead!")
 
         for num_cls in num_classes:
-            heads = copy.deepcopy(common_heads)
+            heads = copy.deepcopy(common_heads) # Creating a head for each class 
             if not dcn_head:
-                heads.update(dict(hm=(num_cls, num_hm_conv)))
+                heads.update(dict(hm=(num_cls, num_hm_conv))) #Here, added the head map 
                 self.tasks.append(
                     SepHead(share_conv_channel, heads, bn=True, init_bias=init_bias, final_kernel=3)
                 )
@@ -239,7 +242,7 @@ class CenterHead(nn.Module):
         x = self.shared_conv(x)
 
         for task in self.tasks:
-            ret_dicts.append(task(x))
+            ret_dicts.append(task(x)) #ret_dict is a dictionary of each head. 
 
         return ret_dicts, x
 
@@ -254,6 +257,7 @@ class CenterHead(nn.Module):
             preds_dict['hm'] = self._sigmoid(preds_dict['hm'])
 
             hm_loss = self.crit(preds_dict['hm'], example['hm'][task_id], example['ind'][task_id], example['mask'][task_id], example['cat'][task_id])
+            #ind (batch x max_objects) get the object location, and only work with the category 
 
             target_box = example['anno_box'][task_id]
             # reconstruct the anno_box from multiple reg heads
