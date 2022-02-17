@@ -1,0 +1,8 @@
+2022-02-10 22:41:18,507 - INFO - Start running, host: root@413db35afb29, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_1x_yiyangtest
+2022-02-10 22:41:18,507 - INFO - workflow: [('train', 1)], max: 12 epochs
+2022-02-10 22:41:45,152 - INFO - Epoch [1/12][5/5]	lr: 0.00048, eta: 0:04:52, time: 5.326, data_time: 4.177, transfer_time: 0.013, forward_time: 0.542, loss_parse_time: 0.000 memory: 5783, 
+2022-02-10 22:41:45,152 - INFO - task : ['VEHICLE'], loss: 73.0792, hm_loss: 4.9351, loc_loss: 34.0720, loc_loss_elem: ['3.7109', '4.6724', '5.5683', '5.3759', '3.6025', '2.8778', '4.0388', '4.2255'], num_positive: 62.8000
+
+2022-02-10 22:42:09,193 - INFO - Epoch [2/12][5/5]	lr: 0.00113, eta: 0:04:11, time: 4.747, data_time: 3.560, transfer_time: 0.013, forward_time: 0.581, loss_parse_time: 0.000 memory: 5860, 
+2022-02-10 22:42:09,195 - INFO - task : ['VEHICLE'], loss: 19.5928, hm_loss: 3.5725, loc_loss: 8.0101, loc_loss_elem: ['0.7168', '0.8598', '1.9398', '1.1748', '0.8656', '0.6362', '0.9689', '0.8483'], num_positive: 67.4000
+

@@ -1,0 +1,2 @@
+2022-02-10 22:21:25,962 - INFO - Start running, host: root@a6d260826952, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_1x_yiyangtest
+2022-02-10 22:21:25,962 - INFO - workflow: [('train', 1)], max: 12 epochs
