@@ -145,7 +145,7 @@ val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = None
 
 data = dict(
-    samples_per_gpu=4,
+    samples_per_gpu=1,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
@@ -200,7 +200,7 @@ log_config = dict(
 )
 # yapf:enable
 # runtime settings
-total_epochs = 1
+total_epochs = 12
 device_ids = range(8)
 dist_params = dict(backend="nccl", init_method="env://")
 log_level = "INFO"

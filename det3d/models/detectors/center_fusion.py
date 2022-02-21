@@ -10,9 +10,9 @@ class FusionDetector(BaseDetector):
     def __init__(
         self,
         first_stage_cfg,
-        first_2d_stage_cfg,
         second_stage_modules,
-        roi_head, 
+        roi_head,
+        image_head_cfg, 
         NMS_POST_MAXSIZE,
         num_point=1,
         freeze=False,
@@ -26,11 +26,7 @@ class FusionDetector(BaseDetector):
             print("Freeze First Stage Network")
             # we train the model in two steps 
             self.single_det = self.single_det.freeze()
-            self.single_det_2d = self.single_det.freeze()
         self.bbox_head = self.single_det.bbox_head
-
-        # Adding the 2D network 
-        self.single_det_2d= builder.build_detector(first_2d_stage_cfg,**kwargs)
 
         self.second_stage = nn.ModuleList()
         # can be any number of modules 
@@ -39,8 +35,10 @@ class FusionDetector(BaseDetector):
             self.second_stage.append(builder.build_second_stage_module(module))
 
         self.roi_head = builder.build_roi_head(roi_head)
-
+        
         self.num_point = num_point
+
+        self.image_head= builder.build_detector(image_head_cfg)
 
     def combine_loss(self, one_stage_loss, roi_loss, tb_dict):
         one_stage_loss['loss'][0] += (roi_loss)
@@ -156,28 +154,23 @@ class FusionDetector(BaseDetector):
         return pred_dicts 
 
 
-    def fuse():
-        if len(out_3d) == 5:
+    def forward(self, example, return_loss=True, **kwargs):
+
+        image_out= self.image_head.forward(example,return_loss,**kwargs)
+
+        print("2D WORKSSSSSSSSSSSSSSSSSSS")
+        out = self.single_det.forward_with_2Dfusion(example, 
+            return_loss, image_out,**kwargs)
+
+        if len(out) == 5:
+            one_stage_pred, bev_feature, voxel_feature, final_feature, one_stage_loss = out 
             example['voxel_feature'] = voxel_feature
-            return one_stage_pred, bev_feature, voxel_feature, final_feature, one_stage_loss
-        elif len(out_3d) == 3:
-            return one_stage_pred, bev_feature, one_stage_loss
+            print("USED 5")
+        elif len(out) == 3:
+            one_stage_pred, bev_feature, one_stage_loss = out 
+            print("USED 3")
         else:
             raise NotImplementedError
-
-
-
-    def forward(self, example, return_loss=True, **kwargs):
-        out_3d = self.single_det.forward_two_stage(example, 
-            return_loss, **kwargs)
-            # forward_two_stage is defined in pointpillars.py or voxelnet.py 
-
-        out_2d= self.single_det_2d.forward_two_stage(example, return_loss, **kwargs)
-
-
-
-        one_stage_pred, bev_feature, one_stage_loss = self.fuse(out_3d, out_2d, example) 
-
 
         # N C H W -> N H W C 
         if kwargs.get('use_final_feature', False):

@@ -158,10 +158,24 @@ class TwoStageDetector(BaseDetector):
         if len(out) == 5:
             one_stage_pred, bev_feature, voxel_feature, final_feature, one_stage_loss = out 
             example['voxel_feature'] = voxel_feature
+            print("USED 5")
         elif len(out) == 3:
             one_stage_pred, bev_feature, one_stage_loss = out 
+            print("USED 3")
         else:
             raise NotImplementedError
+
+        # print(len(one_stage_pred)) # A list of 4, with each entry a dict of ['box3d_lidar', 'scores', 'label_preds', 'metadata']
+        # print("bev_feature")
+        # print(bev_feature.size()) #torch.Size([4, 512, 188, 188])
+        # print("voxel_feature")
+        # print(voxel_feature.keys()) # A dict dict_keys(['conv1', 'conv2', 'conv3', 'conv4'])
+        # print("final_feature")
+        # print(final_feature.size()) # torch.Size([4, 64, 188, 188]) 
+        # print("one_stage_loss")
+        # print(one_stage_loss.size())
+
+
 
         # N C H W -> N H W C 
         if kwargs.get('use_final_feature', False):

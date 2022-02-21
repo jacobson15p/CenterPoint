@@ -4,6 +4,7 @@ from .single_stage import SingleStageDetector
 from .voxelnet import VoxelNet
 from .two_stage import TwoStageDetector
 from .centernet import DddHead
+from .center_fusion import FusionDetector
 
 __all__ = [
     "BaseDetector",
@@ -11,4 +12,5 @@ __all__ = [
     "VoxelNet",
     "PointPillars",
     "DddHead",
+    "FusionDetector",
 ]

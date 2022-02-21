@@ -52,7 +52,7 @@ def convert_box(info):
     return detection 
 
 def main():
-    cfg = Config.fromfile('/code/CenterPoint/configs/waymo/2D/waymo_centernet_dla34.py')
+    cfg = Config.fromfile('/code/CenterPoint/configs/waymo/voxelnet/waymo_centerpoint_voxelnet_1x.py')
     
     model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
 
@@ -70,8 +70,9 @@ def main():
     )
 
     for x in data_loader:
-        #print(x['hm_cam'].shape)
-        print(model(x,return_loss=True))
+        print(x['mask_cam'].shape)
+        print(x['mask'].shape)
+        #print(model(x,return_loss=True))
         break
     
     '''

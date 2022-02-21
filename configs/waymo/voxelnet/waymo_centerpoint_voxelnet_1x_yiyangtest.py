@@ -4,7 +4,7 @@ import logging
 from det3d.utils.config_tool import get_downsample_factor
 
 tasks = [
-    dict(num_class=3, class_names=['VEHICLE']),
+    dict(num_class=3, class_names=['VEHICLE', 'PEDESTRIAN', 'CYCLIST']),
 ]
 
 class_names = list(itertools.chain(*[t["class_names"] for t in tasks]))
@@ -17,7 +17,7 @@ target_assigner = dict(
 # model settings
 model = dict(
     type="VoxelNet",
-    pretrained=None,
+    pretrained='/code/CenterPoint/pretrained_weights/epoch_36.pth',
     reader=dict(
         type="VoxelFeatureExtractorV3",
         num_input_features=5,
@@ -52,7 +52,7 @@ assigner = dict(
     gaussian_overlap=0.1,
     max_objs=500,
     min_radius=2,
-    cam_down_ratio=1,
+    cam_down_ratio=4,
 )
 
 
@@ -88,12 +88,16 @@ db_sampler = dict(
     enable=False,
     db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
-        dict(VEHICLE=15)
+        dict(VEHICLE=15),
+        dict(PEDESTRIAN=0),
+        dict(CYCLIST=10),
     ],
     db_prep_steps=[
         dict(
             filter_by_min_num_points=dict(
-                VEHICLE=5
+                VEHICLE=5,
+                PEDESTRIAN=5,
+                CYCLIST=5,
             )
         ),
         dict(filter_by_difficulty=[-1],),

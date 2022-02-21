@@ -341,35 +341,97 @@ def extract_depth_map(frame):
   Extract front-view lidar camera projection for ground-truth depth maps
   """
   (range_images, camera_projections, range_image_top_pose) = frame_utils.parse_range_image_and_camera_projection(frame)
-  points, cp_points = frame_utils.convert_range_image_to_point_cloud(
-    frame,
-    range_images,
-    camera_projections,
-    range_image_top_pose)
-  points_all = np.concatenate(points, axis=0)
-  cp_points_all = np.concatenate(cp_points, axis=0)
-  images = sorted(frame.images, key=lambda i:i.name)
 
-  # The distance between lidar points and vehicle frame origin.
-  points_all_tensor = tf.norm(points_all, axis=-1, keepdims=True)
-  cp_points_all_tensor = tf.constant(cp_points_all, dtype=tf.int32)
+  for c in frame.context.camera_calibrations:
+    if dataset_pb2.CameraName.Name.Name(c.name) == 'FRONT':
+      extrinsic = np.reshape(
+        np.array(c.extrinsic.transform, np.float32), [4, 4])
+  range_images_cartesian = convert_range_image_to_cartesian(frame,range_images,range_image_top_pose)
+  cam_projection = (np.array(camera_projections[1][0].data).reshape(64,2650,6))[np.newaxis,...]
+  depth = range_image_utils.build_camera_depth_image(range_images_cartesian[1][np.newaxis,...],extrinsic[np.newaxis,...],cam_projection ,[1280,1920],1)
+  p = np.where(depth[0]!= 0)
+  v = np.extract(depth[0]!=0,depth[0])
+  grid_w,grid_h = np.mgrid[0:1280,0:1920]
+  depth_map = griddata(p, v, (grid_w, grid_h), method='nearest')
+  depth_map = depth_map/np.max(depth_map)
 
-  mask = tf.equal(cp_points_all_tensor[..., 0], images[0].name)
+  return depth_map[0:1280:4,0:1920:4]
 
-  cp_points_all_tensor = tf.cast(tf.gather_nd(
-      cp_points_all_tensor, tf.where(mask)), dtype=tf.float32)
-  points_all_tensor = tf.gather_nd(points_all_tensor, tf.where(mask))
 
-  projected_points_all_from_raw_data = tf.concat(
-      [cp_points_all_tensor[..., 1:3], points_all_tensor], axis=-1).numpy()
-  projected_points_all_from_raw_data[:,2] = projected_points_all_from_raw_data[:,2]/max(projected_points_all_from_raw_data[:,2])
-  depth_map = np.ones((1920,1280))
-  min_h = int(min(projected_points_all_from_raw_data[:,1]))
-  max_h = int(max(projected_points_all_from_raw_data[:,1]))
-  min_w = int(min(projected_points_all_from_raw_data[:,0]))
-  max_w = int(max(projected_points_all_from_raw_data[:,0]))
-  grid_w,grid_h = np.mgrid[min_w:max_w,min_h:max_h]
-  depth_vals = griddata(projected_points_all_from_raw_data[:,0:2],projected_points_all_from_raw_data[:,2],(grid_w,grid_h),method='linear')
-  depth_map[min_w:max_w,min_h:max_h] = depth_vals
 
-  return depth_map[0:1920:4,0:1280:4].T
+def convert_range_image_to_cartesian(frame,
+                                     range_images,
+                                     range_image_top_pose,
+                                     ri_index=0,
+                                     keep_polar_features=False):
+  """Convert range images from polar coordinates to Cartesian coordinates.
+  Args:
+    frame: open dataset frame
+    range_images: A dict of {laser_name, [range_image_first_return,
+       range_image_second_return]}.
+    range_image_top_pose: range image pixel pose for top lidar.
+    ri_index: 0 for the first return, 1 for the second return.
+    keep_polar_features: If true, keep the features from the polar range image
+      (i.e. range, intensity, and elongation) as the first features in the
+      output range image.
+  Returns:
+    dict of {laser_name, (H, W, D)} range images in Cartesian coordinates. D
+      will be 3 if keep_polar_features is False (x, y, z) and 6 if
+      keep_polar_features is True (range, intensity, elongation, x, y, z).
+  """
+  cartesian_range_images = {}
+  frame_pose = tf.convert_to_tensor(
+      value=np.reshape(np.array(frame.pose.transform), [4, 4]))
+
+  # [H, W, 6]
+  range_image_top_pose_tensor = tf.reshape(
+      tf.convert_to_tensor(value=range_image_top_pose.data),
+      range_image_top_pose.shape.dims)
+  # [H, W, 3, 3]
+  range_image_top_pose_tensor_rotation = transform_utils.get_rotation_matrix(
+      range_image_top_pose_tensor[..., 0], range_image_top_pose_tensor[..., 1],
+      range_image_top_pose_tensor[..., 2])
+  range_image_top_pose_tensor_translation = range_image_top_pose_tensor[..., 3:]
+  range_image_top_pose_tensor = transform_utils.get_transform(
+      range_image_top_pose_tensor_rotation,
+      range_image_top_pose_tensor_translation)
+
+  for c in frame.context.laser_calibrations:
+    range_image = range_images[c.name][ri_index]
+    if len(c.beam_inclinations) == 0:  # pylint: disable=g-explicit-length-test
+      beam_inclinations = range_image_utils.compute_inclination(
+          tf.constant([c.beam_inclination_min, c.beam_inclination_max]),
+          height=range_image.shape.dims[0])
+    else:
+      beam_inclinations = tf.constant(c.beam_inclinations)
+
+    beam_inclinations = tf.reverse(beam_inclinations, axis=[-1])
+    extrinsic = np.reshape(np.array(c.extrinsic.transform), [4, 4])
+
+    range_image_tensor = tf.reshape(
+        tf.convert_to_tensor(value=range_image.data), range_image.shape.dims)
+    pixel_pose_local = None
+    frame_pose_local = None
+    if c.name == dataset_pb2.LaserName.TOP:
+      pixel_pose_local = range_image_top_pose_tensor
+      pixel_pose_local = tf.expand_dims(pixel_pose_local, axis=0)
+      frame_pose_local = tf.expand_dims(frame_pose, axis=0)
+    range_image_cartesian = range_image_utils.extract_point_cloud_from_range_image(
+        tf.expand_dims(range_image_tensor[..., 0], axis=0),
+        tf.expand_dims(extrinsic, axis=0),
+        tf.expand_dims(tf.convert_to_tensor(value=beam_inclinations), axis=0),
+        pixel_pose=pixel_pose_local,
+        frame_pose=frame_pose_local)
+
+    range_image_cartesian = tf.squeeze(range_image_cartesian, axis=0)
+
+    if keep_polar_features:
+      # If we want to keep the polar coordinate features of range, intensity,
+      # and elongation, concatenate them to be the initial dimensions of the
+      # returned Cartesian range image.
+      range_image_cartesian = tf.concat(
+          [range_image_tensor[..., 0:3], range_image_cartesian], axis=-1)
+
+    cartesian_range_images[c.name] = range_image_cartesian
+
+  return cartesian_range_images

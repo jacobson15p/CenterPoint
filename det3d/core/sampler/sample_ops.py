@@ -180,7 +180,6 @@ class DataBaseSamplerV2:
                     s_points = np.fromfile(
                         str(pathlib.Path(root_path) / info["path"]), dtype=np.float32
                     ).reshape(-1, num_point_features)
-
                     if "rot_transform" in info:
                         rot = info["rot_transform"]
                         s_points[:, :3] = box_np_ops.rotation_points_single_angle(
@@ -210,6 +209,7 @@ class DataBaseSamplerV2:
                         s_points = s_points[np.logical_not(mask)]
                     s_points_list_new.append(s_points)
                 s_points_list = s_points_list_new
+
             ret = {
                 "gt_names": np.array([s["name"] for s in sampled]),
                 "difficulty": np.array([s["difficulty"] for s in sampled]),

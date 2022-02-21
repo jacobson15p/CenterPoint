@@ -66,6 +66,40 @@ class VoxelNet(SingleStageDetector):
         bev_feature = x 
         preds, final_feat = self.bbox_head(x)
 
+
+        print("example length")
+        print(example['images'].shape) #[4,3,1280,1920]
+        print("PREDS")
+        print(len(preds))
+        print(preds[0].keys())
+
+
+        if return_loss:
+            # manual deepcopy ...
+            new_preds = []
+            for pred in preds:
+                new_pred = {} 
+                for k, v in pred.items():
+                    new_pred[k] = v.detach()
+                new_preds.append(new_pred)
+
+            boxes = self.bbox_head.predict(example, new_preds, self.test_cfg)
+
+            return boxes, bev_feature, voxel_feature, final_feat, self.bbox_head.loss(example, preds, self.test_cfg)
+        else:
+            boxes = self.bbox_head.predict(example, preds, self.test_cfg)
+            return boxes, bev_feature, voxel_feature, final_feat, None 
+
+
+
+    def forward_with_2Dfusion(self, example, return_loss=True, **kwargs):
+        x, voxel_feature = self.extract_feat(example)
+        bev_feature = x 
+        preds, final_feat = self.bbox_head(x)
+
+
+        # Preds only come with the HM and stuff, not the full prediction, considering adding something here 
+
         if return_loss:
             # manual deepcopy ...
             new_preds = []

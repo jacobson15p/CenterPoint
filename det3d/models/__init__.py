@@ -23,8 +23,7 @@ from .registry import (
     HEADS,
     LOSSES,
     NECKS,
-    READERS,
-)
+    READERS)
 from .second_stage import * 
 from .roi_heads import * 
 
@@ -34,7 +33,7 @@ __all__ = [
     "NECKS",
     "HEADS",
     "LOSSES",
-    "DETECTORS",
+    "IMAGE_HEAD",
     "build_backbone",
     "build_neck",
     "build_head",
