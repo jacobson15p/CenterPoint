@@ -92,11 +92,10 @@ class VoxelNet(SingleStageDetector):
 
 
 
-    def forward_with_2Dfusion(self, example, return_loss=True, **kwargs):
+    def forward_with_2Dfusion(self, example, image_out, return_loss=True, **kwargs):
         x, voxel_feature = self.extract_feat(example)
         bev_feature = x 
         preds, final_feat = self.bbox_head(x)
-
 
         # Preds only come with the HM and stuff, not the full prediction, considering adding something here 
 
@@ -106,12 +105,12 @@ class VoxelNet(SingleStageDetector):
             for pred in preds:
                 new_pred = {} 
                 for k, v in pred.items():
-                    new_pred[k] = v.detach()
+                    new_pred[k] = v.detach() # will not have the gradient again. 
                 new_preds.append(new_pred)
 
-            boxes = self.bbox_head.predict(example, new_preds, self.test_cfg)
+            boxes = self.bbox_head.predict_with_fusion(example, new_preds,image_out, self.test_cfg)
 
             return boxes, bev_feature, voxel_feature, final_feat, self.bbox_head.loss(example, preds, self.test_cfg)
         else:
-            boxes = self.bbox_head.predict(example, preds, self.test_cfg)
+            boxes = self.bbox_head.predict_with_fusion(example, preds, image_out, self.test_cfg)
             return boxes, bev_feature, voxel_feature, final_feat, None 

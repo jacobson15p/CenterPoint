@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import sys
+#from turtle import xcor
 
 try:
     import apex
@@ -52,9 +53,14 @@ def convert_box(info):
     return detection 
 
 def main():
-    cfg = Config.fromfile('/code/CenterPoint/configs/waymo/voxelnet/waymo_centerpoint_voxelnet_1x.py')
+    cfg = Config.fromfile('/code/CenterPoint/configs/waymo/2D/waymo_centernet_dla34_v1.py')
     
-    model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
+    model = build_detector(cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
+    weights = torch.load('/code/CenterPoint/pretrained_weights/ddd_3dop_mod.pth')
+    #weights['state_dict'].pop("module.base.fc.weight")
+    #weights['state_dict'].pop("module.base.fc.bias")
+    model.load_state_dict(weights['state_dict'])
+    #model.eval()
 
     dataset = build_dataset(cfg.data.train)
 
@@ -68,10 +74,26 @@ def main():
         collate_fn=collate_kitti,
         pin_memory=False,
     )
-
+    
+    
     for x in data_loader:
-        print(x['mask_cam'].shape)
-        print(x['mask'].shape)
+        print(torch.min(x['images']))
+        plt.imshow(x['images'][0].permute(1,2,0))
+        plt.savefig('image_test')
+        #hm = x['hm_cam'][0][0].view(3,-1)
+        #print(torch.max(hm))
+        #for i in x['ind_cam'][0][0]:
+        #    if i == 0:
+        #        break
+        #    print(i)
+        #    print(hm[:,i])
+        #plt.figure(1)
+        #plt.imshow(x['hm_cam'][0][0].permute(1,2,0))
+        #plt.savefig('hm_kitti')
+        #plt.figure(2)
+        #hm_pred = model(x,return_loss=False)['results']['hm'].detach()
+        #plt.imshow(hm_pred[0].permute(1,2,0)[:94,:300,:])
+        #plt.savefig('hm_kitti_pred')
         #print(model(x,return_loss=True))
         break
     

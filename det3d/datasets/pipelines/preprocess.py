@@ -312,6 +312,7 @@ class AssignLabel(object):
                 grid_size = (pc_range[3:] - pc_range[:3]) / voxel_size
                 grid_size = np.round(grid_size).astype(np.int64)
 
+
             feature_map_size = grid_size[:2] // self.out_size_factor
             cam_feature_map_size = tuple(d// self.camera_out_size_factor for d in res['cam']['images'].shape[2:])
 
@@ -501,7 +502,8 @@ class AssignLabel(object):
             example.update({'gt_boxes_and_cls': gt_boxes_and_cls})
 
             example.update({'hm': hms, 'anno_box': anno_boxs, 'ind': inds, 'mask': masks, 'cat': cats, 'gt_boxes_cam': gt_boxes_cam, 'hm_cam': hms_cam, 'ind_cam': inds_cam, 'mask_cam': masks_cam,
-                'cat_cam': cats_cam, 'dep': deps})
+                'cat_cam': cats_cam, 'dep': deps, 'dep_map': res['cam']['annotations']['depth_map'],'hm_pixel_size': self.out_size_factor * voxel_size[0], 'range':grid_size *  voxel_size[0],
+                'feature_map_size': feature_map_size},)
         else:
             pass
 

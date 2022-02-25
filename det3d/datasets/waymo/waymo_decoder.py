@@ -353,7 +353,7 @@ def extract_depth_map(frame):
   v = np.extract(depth[0]!=0,depth[0])
   grid_w,grid_h = np.mgrid[0:1280,0:1920]
   depth_map = griddata(p, v, (grid_w, grid_h), method='nearest')
-  depth_map = depth_map/np.max(depth_map)
+  depth_map = depth_map
 
   return depth_map[0:1280:4,0:1920:4]
 

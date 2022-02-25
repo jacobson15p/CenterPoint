@@ -73,7 +73,7 @@ class BaseHead(nn.Module):
     
     super(BaseHead, self).__init__()
     print('Creating model...')
-    self.model = builder.build_backbone(backbone)
+    self.module = builder.build_backbone(backbone)
 
     self.mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 1, 3)
     self.std = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(1, 1, 3)
@@ -145,6 +145,39 @@ class BaseHead(nn.Module):
 
 
 
+  def forward_two_stage(self, x, return_loss = True, meta=None):
+    images = x['images']
+    
+    output = self.process(images)
+    
+    if return_loss:
+      pred_dict = x
+      rets = []
+      hm_loss = self.crit(output['hm'], pred_dict['hm_cam'][0], pred_dict['ind_cam'][0],
+        pred_dict['mask_cam'][0], pred_dict['cat_cam'][0])
+      dep_loss = self.crit_reg(output['dep'], pred_dict['mask_cam'][0], pred_dict['ind_cam'][0],
+        pred_dict['dep'][0].unsqueeze(-1))
+
+      loss = hm_loss + dep_loss
+
+      losses = {'loss': loss, 'hm_loss': hm_loss.detach().cpu(), 'dep_loss': dep_loss.detach().cpu(),'num_positive': pred_dict['mask_cam'][0].float().sum(),}
+      rets.append(losses)
+
+      """
+      convert batch-key to key-batch
+      """
+      losses_merged = defaultdict(list)
+      for ret in rets:
+          for k, v in ret.items():
+              losses_merged[k].append(v)
+
+      return {'results': output, 'loss': losses_merged}
+
+    else:
+      return {'results': output, }
+
+
+
 @DETECTORS.register_module
 class DddHead(BaseHead):
   def __init__(self, tasks, backbone, pretrained=None, train_cfg=None, test_cfg=None):
@@ -155,9 +188,9 @@ class DddHead(BaseHead):
   
   def process(self, images):
     #with torch.no_grad():
-    output = self.model(images)[-1]
+    output = self.module(images)[-1]
     output['hm'] = output['hm'].sigmoid_()
-    output['dep'] = 1. / (output['dep'].sigmoid() + 1e-6) - 1.
+    #output['dep'] = 1. / (output['dep'].sigmoid() + 1e-6) - 1.
     #wh = output['wh'] #if self.opt.reg_bbox else None
     #reg = output['reg'] #if self.opt.reg_offset else None
 

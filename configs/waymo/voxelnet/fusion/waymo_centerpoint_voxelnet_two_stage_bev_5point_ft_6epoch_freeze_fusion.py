@@ -210,7 +210,7 @@ val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = None
 
 data = dict(
-    samples_per_gpu=3,
+    samples_per_gpu=2,
     workers_per_gpu=3,
     train=dict(
         type=dataset_type,

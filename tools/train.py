@@ -109,6 +109,8 @@ def main():
         set_random_seed(args.seed)
 
     model = build_detector(cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
+    if cfg.load_from is not None:
+        model.load_state_dict(torch.load(cfg.load_from)['state_dict'])
 
     datasets = [build_dataset(cfg.data.train)]
 

@@ -156,11 +156,11 @@ class FusionDetector(BaseDetector):
 
     def forward(self, example, return_loss=True, **kwargs):
 
-        image_out= self.image_head.forward(example,return_loss,**kwargs)
+        image_out= self.image_head.forward_two_stage(example,return_loss,**kwargs)
+        #image_put is a dictionary, {'results': output, 'loss': losses_merged}
 
-        print("2D WORKSSSSSSSSSSSSSSSSSSS")
-        out = self.single_det.forward_with_2Dfusion(example, 
-            return_loss, image_out,**kwargs)
+        out = self.single_det.forward_with_2Dfusion(example, image_out,
+            return_loss,**kwargs)
 
         if len(out) == 5:
             one_stage_pred, bev_feature, voxel_feature, final_feature, one_stage_loss = out 
