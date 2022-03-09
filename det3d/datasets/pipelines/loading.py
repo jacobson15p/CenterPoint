@@ -13,6 +13,7 @@ import pickle
 import os 
 from ..registry import PIPELINES
 from PIL import Image
+import cv2
 
 
 def _dict_select(dict_, inds):
@@ -157,8 +158,8 @@ class LoadPointCloudFromFile(object):
             obj = get_obj(path)
             points = read_single_waymo(obj)
             res["lidar"]["points"] = points
-            res['cam']['images'] = obj['images']
-            #res['cam']['images'] = np.array(Image.open('/code/CenterPoint/000052.png'),np.float32)
+            #res['cam']['images'] = obj['images']
+            res['cam']['images'] = cv2.imread('/code/CenterPoint/000052.png')
             res['calib'] = obj['camera_calibrations']
 
             if nsweeps > 1: 

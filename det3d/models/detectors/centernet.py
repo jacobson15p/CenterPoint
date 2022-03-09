@@ -9,6 +9,7 @@ import time
 import torch
 import torch.nn as nn
 from collections import defaultdict
+from matplotlib import pyplot as plt
 
 
 from ..registry import DETECTORS
@@ -68,12 +69,69 @@ def get_affine_transform(center,
 
     return trans
 
+def load_model(model, model_path, optimizer=None, resume=False, 
+               lr=None, lr_step=None):
+  start_epoch = 0
+  checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
+  print('loaded {}, epoch {}'.format(model_path, checkpoint['epoch']))
+  state_dict_ = checkpoint['state_dict']
+  state_dict = {}
+  
+  # convert data_parallal to model
+  for k in state_dict_:
+    if k.startswith('module') and not k.startswith('module_list'):
+      state_dict[k[7:]] = state_dict_[k]
+    else:
+      state_dict[k] = state_dict_[k]
+  model_state_dict = model.state_dict()
+
+  # check loaded parameters and created model parameters
+  msg = 'If you see this, your model does not fully load the ' + \
+        'pre-trained weight. Please make sure ' + \
+        'you have correctly specified --arch xxx ' + \
+        'or set the correct --num_classes for your own dataset.'
+  for k in state_dict:
+    if k in model_state_dict:
+      if state_dict[k].shape != model_state_dict[k].shape:
+        print('Skip loading parameter {}, required shape{}, '\
+              'loaded shape{}. {}'.format(
+          k, model_state_dict[k].shape, state_dict[k].shape, msg))
+        state_dict[k] = model_state_dict[k]
+    else:
+      print('Drop parameter {}.'.format(k) + msg)
+  for k in model_state_dict:
+    if not (k in state_dict):
+      print('No param {}.'.format(k) + msg)
+      state_dict[k] = model_state_dict[k]
+  model.load_state_dict(state_dict, strict=False)
+
+  # resume optimizer parameters
+  if optimizer is not None and resume:
+    if 'optimizer' in checkpoint:
+      optimizer.load_state_dict(checkpoint['optimizer'])
+      start_epoch = checkpoint['epoch']
+      start_lr = lr
+      for step in lr_step:
+        if start_epoch >= step:
+          start_lr *= 0.1
+      for param_group in optimizer.param_groups:
+        param_group['lr'] = start_lr
+      print('Resumed optimizer with start lr', start_lr)
+    else:
+      print('No optimizer parameters in checkpoint.')
+  if optimizer is not None:
+    return model, optimizer, start_epoch
+  else:
+    return model
+
 class BaseHead(nn.Module):
   def __init__(self, tasks, backbone, pretrained=None, train_cfg=None, test_cfg=None):
     
     super(BaseHead, self).__init__()
     print('Creating model...')
-    self.module = builder.build_backbone(backbone)
+    self.model = builder.build_backbone(backbone)
+    self.model = load_model(self.model,'/code/CenterPoint/pretrained_weights/ddd_3dop.pth')
+    self.model.to(torch.device('cuda'))
 
     self.mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 1, 3)
     self.std = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(1, 1, 3)
@@ -114,6 +172,11 @@ class BaseHead(nn.Module):
 
   def forward(self, x, return_loss = True, meta=None):
     images = x['images']
+    images = images.to(torch.device('cuda'))
+    x1 = torch.load('image_test1.pth')
+    x2 = torch.load('image_test2.pth')
+    images = x2
+    print(images.shape)
     
     output = self.process(images)
     
@@ -187,9 +250,18 @@ class DddHead(BaseHead):
                            [0, 0, 1., 0.004981016]], dtype=np.float32)
   
   def process(self, images):
-    #with torch.no_grad():
-    output = self.module(images)[-1]
+    #inp_image = np.zeros((3,384,1280),np.float32)
+    #inp_image[:,:375,:1242] = images
+    #images = inp_image
+    #plt.imshow(images[0].permute(1,2,0))
+    #plt.savefig('image_test_2')
+    #images = torch.load('tensor_test.pth')
+    output = self.model(images)[-1]
     output['hm'] = output['hm'].sigmoid_()
+    #plt.figure(2)
+    #print(hm_pred.shape)
+    #plt.imshow(hm_pred[0].permute(1,2,0))
+    #plt.savefig('hm_kitti_pred')
     #output['dep'] = 1. / (output['dep'].sigmoid() + 1e-6) - 1.
     #wh = output['wh'] #if self.opt.reg_bbox else None
     #reg = output['reg'] #if self.opt.reg_offset else None

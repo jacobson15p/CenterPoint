@@ -9,6 +9,8 @@ from det3d.core.utils.center_utils import (
     draw_umich_gaussian, gaussian_radius
 )
 from ..registry import PIPELINES
+from matplotlib import pyplot as plt
+import torch
 
 
 def _dict_select(dict_, inds):
@@ -156,12 +158,19 @@ class Preprocess(object):
             res["lidar"]["annotations"] = gt_dict
 
         #Preprocess images
+        torch.save(res['cam']['images'],'image_test4.pth')
         mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 1, 3)
         std = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(1, 1, 3)
 
-        
-        res['cam']['images'] = ((res['cam']['images']/ 255. - mean)/std).astype(np.float32)
+        scaled_image = np.zeros((384,1280,3))
+        scaled_image[:375,:1242,:] = res['cam']['images']
+        res['cam']['images'] = scaled_image
+
+
+        res['cam']['images'] = res['cam']['images'].astype(np.float32)/ 255. 
+        res['cam']['images'] = (res['cam']['images'] - mean)/std
         res['cam']['images'] = res['cam']['images'].transpose(2, 0, 1)[np.newaxis,...]
+
 
         return res, info
 
