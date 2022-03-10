@@ -173,10 +173,10 @@ class BaseHead(nn.Module):
   def forward(self, x, return_loss = True, meta=None):
     images = x['images']
     images = images.to(torch.device('cuda'))
+    torch.save(images,'image_test4.pth')
     x1 = torch.load('image_test1.pth')
     x2 = torch.load('image_test2.pth')
-    images = x2
-    print(images.shape)
+    images = x1
     
     output = self.process(images)
     
