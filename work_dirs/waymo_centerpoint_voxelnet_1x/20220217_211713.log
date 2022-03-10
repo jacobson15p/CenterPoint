@@ -1,0 +1,11 @@
+2022-02-17 21:17:13,358 - INFO - Start running, host: root@032c02c28a04, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_1x
+2022-02-17 21:17:13,358 - INFO - workflow: [('train', 1)], max: 1 epochs
+2022-02-17 21:17:40,871 - INFO - Epoch [1/1][5/108]	lr: 0.00036, eta: 0:09:26, time: 5.499, data_time: 3.896, transfer_time: 0.084, forward_time: 0.644, loss_parse_time: 0.000 memory: 7020, 
+2022-02-17 21:17:40,872 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 59.4077, hm_loss: 5.1008, loc_loss: 27.1535, loc_loss_elem: ['2.3721', '3.3105', '4.2862', '2.9254', '2.1860', '2.8435', '3.0721', '6.1577'], num_positive: 200.8000
+
+2022-02-17 21:17:47,817 - INFO - Epoch [1/1][10/108]	lr: 0.00058, eta: 0:05:37, time: 1.389, data_time: 0.040, transfer_time: 0.065, forward_time: 0.463, loss_parse_time: 0.000 memory: 7330, 
+2022-02-17 21:17:47,818 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 17.5220, hm_loss: 3.9151, loc_loss: 6.8034, loc_loss_elem: ['0.7015', '0.7537', '1.2478', '0.6560', '0.9299', '0.5136', '1.0607', '0.9404'], num_positive: 188.2000
+
+2022-02-17 21:17:55,177 - INFO - Epoch [1/1][15/108]	lr: 0.00095, eta: 0:04:19, time: 1.472, data_time: 0.067, transfer_time: 0.086, forward_time: 0.469, loss_parse_time: 0.000 memory: 7683, 
+2022-02-17 21:17:55,178 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 14.7865, hm_loss: 3.6507, loc_loss: 5.5679, loc_loss_elem: ['0.6049', '0.6113', '1.1030', '0.5518', '0.8010', '0.3694', '0.8520', '0.6745'], num_positive: 182.2000
+
