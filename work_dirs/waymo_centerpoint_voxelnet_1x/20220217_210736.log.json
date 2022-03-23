@@ -1,0 +1,1 @@
+{"mode": "train", "epoch": 1, "iter": 5, "lr": 0.0003, "time": 5.1221, "data_time": 3.27589, "memory": 7035, "transfer_time": 3.34599, "forward_time": 4.2364, "loss_parse_time": 4.2502, "loss": [53.23607], "hm_loss": [10.16283], "loc_loss": [21.53662], "loc_loss_elem": [[2.32476, 2.73571, 4.20546, 2.03848, 2.39632, 2.3953, 3.00228, 2.4383]], "num_positive": [205.2]}

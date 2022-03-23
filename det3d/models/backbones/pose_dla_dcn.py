@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -425,7 +424,6 @@ class Interpolate(nn.Module):
     def forward(self, x):
         x = F.interpolate(x, scale_factor=self.scale, mode=self.mode, align_corners=False)
         return x
-
 
 @BACKBONES.register_module
 class DLASegv2(nn.Module):
