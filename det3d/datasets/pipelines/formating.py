@@ -28,6 +28,9 @@ class Reformat(object):
                 points=points,
                 images=res['cam']['images'],
                 calib=res['calib'],
+                hm_pixel_size=res['hm_pixel_size'],
+                feature_map_size=res['feature_map_size'],
+                range=res['range'],
             )
 
         if 'voxels' in res["lidar"]:

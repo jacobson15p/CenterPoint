@@ -1,0 +1,239 @@
+2022-03-21 20:07:00,165 - INFO - Start running, host: root@38c34f86dda2, work_dir: /code/CenterPoint/work_dirs/waymo_centernet_dla34
+2022-03-21 20:07:00,165 - INFO - workflow: [('train', 1)], max: 1 epochs
+2022-03-21 20:07:13,443 - INFO - Epoch [1/1][5/397]	lr: 0.00030, eta: 0:17:20, time: 2.655, data_time: 1.577, transfer_time: 0.024, forward_time: 0.378, loss_parse_time: 0.000 memory: 8622, 
+2022-03-21 20:07:13,443 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 43.9334, hm_loss: 38.9995, dep_loss: 4.9339, num_positive: 23.4000
+
+2022-03-21 20:07:19,057 - INFO - Epoch [1/1][10/397]	lr: 0.00032, eta: 0:12:11, time: 1.123, data_time: 0.092, transfer_time: 0.024, forward_time: 0.330, loss_parse_time: 0.000 memory: 8627, 
+2022-03-21 20:07:19,057 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 9.1869, hm_loss: 5.0044, dep_loss: 4.1826, num_positive: 22.0000
+
+2022-03-21 20:07:24,703 - INFO - Epoch [1/1][15/397]	lr: 0.00035, eta: 0:10:24, time: 1.129, data_time: 0.091, transfer_time: 0.023, forward_time: 0.340, loss_parse_time: 0.000 memory: 8627, 
+2022-03-21 20:07:24,703 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.9497, hm_loss: 2.7210, dep_loss: 4.2286, num_positive: 38.2000
+
+2022-03-21 20:07:30,405 - INFO - Epoch [1/1][20/397]	lr: 0.00040, eta: 0:09:29, time: 1.140, data_time: 0.099, transfer_time: 0.022, forward_time: 0.337, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:07:30,405 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.6334, hm_loss: 2.5893, dep_loss: 4.0441, num_positive: 29.2000
+
+2022-03-21 20:07:36,282 - INFO - Epoch [1/1][25/397]	lr: 0.00045, eta: 0:08:57, time: 1.175, data_time: 0.149, transfer_time: 0.022, forward_time: 0.325, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:07:36,283 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.8748, hm_loss: 1.8801, dep_loss: 3.9947, num_positive: 47.2000
+
+2022-03-21 20:07:41,932 - INFO - Epoch [1/1][30/397]	lr: 0.00052, eta: 0:08:30, time: 1.129, data_time: 0.078, transfer_time: 0.022, forward_time: 0.344, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:07:41,932 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 4.2095, hm_loss: 1.3770, dep_loss: 2.8325, num_positive: 36.2000
+
+2022-03-21 20:07:47,615 - INFO - Epoch [1/1][35/397]	lr: 0.00060, eta: 0:08:10, time: 1.137, data_time: 0.084, transfer_time: 0.021, forward_time: 0.344, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:07:47,615 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 4.3170, hm_loss: 2.2496, dep_loss: 2.0674, num_positive: 46.0000
+
+2022-03-21 20:07:53,288 - INFO - Epoch [1/1][40/397]	lr: 0.00069, eta: 0:07:54, time: 1.135, data_time: 0.097, transfer_time: 0.022, forward_time: 0.327, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:07:53,288 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 4.5661, hm_loss: 2.8391, dep_loss: 1.7270, num_positive: 52.8000
+
+2022-03-21 20:07:59,172 - INFO - Epoch [1/1][45/397]	lr: 0.00078, eta: 0:07:41, time: 1.176, data_time: 0.139, transfer_time: 0.020, forward_time: 0.329, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:07:59,172 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.1789, hm_loss: 1.6510, dep_loss: 1.5279, num_positive: 30.6000
+
+2022-03-21 20:08:04,880 - INFO - Epoch [1/1][50/397]	lr: 0.00089, eta: 0:07:29, time: 1.142, data_time: 0.094, transfer_time: 0.021, forward_time: 0.332, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:04,881 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.7862, hm_loss: 1.9727, dep_loss: 1.8134, num_positive: 62.0000
+
+2022-03-21 20:08:10,582 - INFO - Epoch [1/1][55/397]	lr: 0.00101, eta: 0:07:17, time: 1.140, data_time: 0.087, transfer_time: 0.022, forward_time: 0.340, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:10,582 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5593, hm_loss: 4.2715, dep_loss: 1.2878, num_positive: 23.6000
+
+2022-03-21 20:08:16,380 - INFO - Epoch [1/1][60/397]	lr: 0.00113, eta: 0:07:08, time: 1.160, data_time: 0.113, transfer_time: 0.023, forward_time: 0.329, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:16,381 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.8208, hm_loss: 1.5246, dep_loss: 1.2961, num_positive: 40.2000
+
+2022-03-21 20:08:22,319 - INFO - Epoch [1/1][65/397]	lr: 0.00125, eta: 0:06:59, time: 1.187, data_time: 0.143, transfer_time: 0.021, forward_time: 0.331, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:22,319 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.5210, hm_loss: 1.9632, dep_loss: 1.5578, num_positive: 47.4000
+
+2022-03-21 20:08:28,098 - INFO - Epoch [1/1][70/397]	lr: 0.00138, eta: 0:06:50, time: 1.157, data_time: 0.085, transfer_time: 0.021, forward_time: 0.357, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:28,098 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.9409, hm_loss: 1.5384, dep_loss: 1.4025, num_positive: 20.2000
+
+2022-03-21 20:08:33,887 - INFO - Epoch [1/1][75/397]	lr: 0.00152, eta: 0:06:42, time: 1.155, data_time: 0.090, transfer_time: 0.022, forward_time: 0.347, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:33,887 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.9079, hm_loss: 1.7411, dep_loss: 1.1668, num_positive: 46.4000
+
+2022-03-21 20:08:39,684 - INFO - Epoch [1/1][80/397]	lr: 0.00165, eta: 0:06:34, time: 1.162, data_time: 0.103, transfer_time: 0.022, forward_time: 0.341, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:39,684 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.0584, hm_loss: 1.6933, dep_loss: 1.3651, num_positive: 45.6000
+
+2022-03-21 20:08:45,666 - INFO - Epoch [1/1][85/397]	lr: 0.00178, eta: 0:06:27, time: 1.196, data_time: 0.137, transfer_time: 0.021, forward_time: 0.340, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:45,666 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.4145, hm_loss: 2.2421, dep_loss: 1.1724, num_positive: 41.0000
+
+2022-03-21 20:08:51,429 - INFO - Epoch [1/1][90/397]	lr: 0.00192, eta: 0:06:19, time: 1.153, data_time: 0.082, transfer_time: 0.022, forward_time: 0.352, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:51,429 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 4.6783, hm_loss: 2.7541, dep_loss: 1.9242, num_positive: 49.6000
+
+2022-03-21 20:08:57,198 - INFO - Epoch [1/1][95/397]	lr: 0.00205, eta: 0:06:12, time: 1.153, data_time: 0.094, transfer_time: 0.021, forward_time: 0.342, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:08:57,198 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.9672, hm_loss: 2.3776, dep_loss: 1.5896, num_positive: 31.8000
+
+2022-03-21 20:09:02,950 - INFO - Epoch [1/1][100/397]	lr: 0.00217, eta: 0:06:04, time: 1.151, data_time: 0.106, transfer_time: 0.023, forward_time: 0.320, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:02,950 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6591, hm_loss: 3.8219, dep_loss: 1.8372, num_positive: 22.0000
+
+2022-03-21 20:09:08,965 - INFO - Epoch [1/1][105/397]	lr: 0.00229, eta: 0:05:58, time: 1.202, data_time: 0.148, transfer_time: 0.021, forward_time: 0.334, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:08,965 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7984, hm_loss: 3.5526, dep_loss: 2.2458, num_positive: 36.2000
+
+2022-03-21 20:09:14,741 - INFO - Epoch [1/1][110/397]	lr: 0.00241, eta: 0:05:51, time: 1.156, data_time: 0.089, transfer_time: 0.022, forward_time: 0.345, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:14,741 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4631, hm_loss: 3.7060, dep_loss: 1.7571, num_positive: 36.8000
+
+2022-03-21 20:09:20,544 - INFO - Epoch [1/1][115/397]	lr: 0.00252, eta: 0:05:44, time: 1.161, data_time: 0.091, transfer_time: 0.022, forward_time: 0.344, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:20,545 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.0597, hm_loss: 4.1795, dep_loss: 1.8802, num_positive: 29.2000
+
+2022-03-21 20:09:26,355 - INFO - Epoch [1/1][120/397]	lr: 0.00261, eta: 0:05:37, time: 1.161, data_time: 0.104, transfer_time: 0.022, forward_time: 0.341, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:26,355 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.3481, hm_loss: 3.6832, dep_loss: 1.6649, num_positive: 38.6000
+
+2022-03-21 20:09:32,359 - INFO - Epoch [1/1][125/397]	lr: 0.00270, eta: 0:05:31, time: 1.200, data_time: 0.140, transfer_time: 0.021, forward_time: 0.336, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:32,359 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 4.9193, hm_loss: 3.2367, dep_loss: 1.6826, num_positive: 48.6000
+
+2022-03-21 20:09:38,121 - INFO - Epoch [1/1][130/397]	lr: 0.00278, eta: 0:05:24, time: 1.155, data_time: 0.088, transfer_time: 0.022, forward_time: 0.350, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:38,121 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4387, hm_loss: 3.9279, dep_loss: 1.5108, num_positive: 32.6000
+
+2022-03-21 20:09:43,891 - INFO - Epoch [1/1][135/397]	lr: 0.00285, eta: 0:05:17, time: 1.154, data_time: 0.088, transfer_time: 0.022, forward_time: 0.346, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:43,891 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 4.6420, hm_loss: 3.1863, dep_loss: 1.4558, num_positive: 44.4000
+
+2022-03-21 20:09:49,737 - INFO - Epoch [1/1][140/397]	lr: 0.00290, eta: 0:05:11, time: 1.170, data_time: 0.119, transfer_time: 0.021, forward_time: 0.331, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:49,738 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7440, hm_loss: 4.0164, dep_loss: 1.7276, num_positive: 45.4000
+
+2022-03-21 20:09:55,661 - INFO - Epoch [1/1][145/397]	lr: 0.00295, eta: 0:05:04, time: 1.184, data_time: 0.135, transfer_time: 0.022, forward_time: 0.332, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:09:55,661 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.1253, hm_loss: 3.2026, dep_loss: 1.9227, num_positive: 36.8000
+
+2022-03-21 20:10:01,448 - INFO - Epoch [1/1][150/397]	lr: 0.00298, eta: 0:04:58, time: 1.158, data_time: 0.093, transfer_time: 0.022, forward_time: 0.347, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:01,448 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5209, hm_loss: 3.7746, dep_loss: 1.7463, num_positive: 36.0000
+
+2022-03-21 20:10:07,208 - INFO - Epoch [1/1][155/397]	lr: 0.00300, eta: 0:04:52, time: 1.151, data_time: 0.091, transfer_time: 0.022, forward_time: 0.342, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:07,209 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.9397, hm_loss: 3.8934, dep_loss: 2.0463, num_positive: 39.2000
+
+2022-03-21 20:10:13,114 - INFO - Epoch [1/1][160/397]	lr: 0.00300, eta: 0:04:45, time: 1.182, data_time: 0.112, transfer_time: 0.022, forward_time: 0.327, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:13,114 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5306, hm_loss: 3.3475, dep_loss: 2.1831, num_positive: 60.4000
+
+2022-03-21 20:10:19,112 - INFO - Epoch [1/1][165/397]	lr: 0.00300, eta: 0:04:39, time: 1.200, data_time: 0.136, transfer_time: 0.021, forward_time: 0.340, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:19,112 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.5633, hm_loss: 4.4776, dep_loss: 2.0857, num_positive: 20.2000
+
+2022-03-21 20:10:24,881 - INFO - Epoch [1/1][170/397]	lr: 0.00298, eta: 0:04:33, time: 1.154, data_time: 0.087, transfer_time: 0.022, forward_time: 0.347, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:24,882 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6105, hm_loss: 4.0886, dep_loss: 1.5219, num_positive: 22.4000
+
+2022-03-21 20:10:30,645 - INFO - Epoch [1/1][175/397]	lr: 0.00297, eta: 0:04:27, time: 1.153, data_time: 0.092, transfer_time: 0.023, forward_time: 0.333, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:30,645 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6821, hm_loss: 3.7880, dep_loss: 1.8941, num_positive: 40.6000
+
+2022-03-21 20:10:36,451 - INFO - Epoch [1/1][180/397]	lr: 0.00294, eta: 0:04:20, time: 1.160, data_time: 0.102, transfer_time: 0.022, forward_time: 0.331, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:36,451 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4190, hm_loss: 3.4382, dep_loss: 1.9809, num_positive: 52.6000
+
+2022-03-21 20:10:42,424 - INFO - Epoch [1/1][185/397]	lr: 0.00291, eta: 0:04:14, time: 1.194, data_time: 0.136, transfer_time: 0.021, forward_time: 0.334, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:42,424 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7281, hm_loss: 3.8632, dep_loss: 1.8649, num_positive: 28.4000
+
+2022-03-21 20:10:48,180 - INFO - Epoch [1/1][190/397]	lr: 0.00288, eta: 0:04:08, time: 1.153, data_time: 0.088, transfer_time: 0.022, forward_time: 0.341, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:48,180 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.1603, hm_loss: 3.4614, dep_loss: 1.6989, num_positive: 52.4000
+
+2022-03-21 20:10:53,967 - INFO - Epoch [1/1][195/397]	lr: 0.00284, eta: 0:04:02, time: 1.157, data_time: 0.090, transfer_time: 0.022, forward_time: 0.344, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:53,967 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.0310, hm_loss: 4.0569, dep_loss: 1.9741, num_positive: 38.8000
+
+2022-03-21 20:10:59,740 - INFO - Epoch [1/1][200/397]	lr: 0.00279, eta: 0:03:55, time: 1.155, data_time: 0.118, transfer_time: 0.022, forward_time: 0.316, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:10:59,740 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6514, hm_loss: 3.8558, dep_loss: 1.7956, num_positive: 28.0000
+
+2022-03-21 20:11:05,754 - INFO - Epoch [1/1][205/397]	lr: 0.00273, eta: 0:03:50, time: 1.203, data_time: 0.138, transfer_time: 0.021, forward_time: 0.336, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:05,754 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.7549, hm_loss: 4.3194, dep_loss: 2.4355, num_positive: 27.6000
+
+2022-03-21 20:11:11,542 - INFO - Epoch [1/1][210/397]	lr: 0.00268, eta: 0:03:43, time: 1.157, data_time: 0.088, transfer_time: 0.022, forward_time: 0.342, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:11,542 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7302, hm_loss: 3.9844, dep_loss: 1.7458, num_positive: 20.2000
+
+2022-03-21 20:11:17,422 - INFO - Epoch [1/1][215/397]	lr: 0.00261, eta: 0:03:37, time: 1.176, data_time: 0.094, transfer_time: 0.022, forward_time: 0.348, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:17,423 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.0034, hm_loss: 4.0470, dep_loss: 1.9563, num_positive: 37.4000
+
+2022-03-21 20:11:23,268 - INFO - Epoch [1/1][220/397]	lr: 0.00254, eta: 0:03:31, time: 1.169, data_time: 0.107, transfer_time: 0.023, forward_time: 0.328, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:23,268 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6396, hm_loss: 3.7609, dep_loss: 1.8788, num_positive: 54.4000
+
+2022-03-21 20:11:29,281 - INFO - Epoch [1/1][225/397]	lr: 0.00247, eta: 0:03:25, time: 1.203, data_time: 0.141, transfer_time: 0.022, forward_time: 0.336, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:29,281 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.2857, hm_loss: 3.5578, dep_loss: 1.7279, num_positive: 41.8000
+
+2022-03-21 20:11:35,152 - INFO - Epoch [1/1][230/397]	lr: 0.00239, eta: 0:03:19, time: 1.174, data_time: 0.084, transfer_time: 0.022, forward_time: 0.361, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:35,152 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5629, hm_loss: 3.6153, dep_loss: 1.9476, num_positive: 42.2000
+
+2022-03-21 20:11:40,950 - INFO - Epoch [1/1][235/397]	lr: 0.00231, eta: 0:03:13, time: 1.159, data_time: 0.091, transfer_time: 0.022, forward_time: 0.339, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:40,950 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6783, hm_loss: 3.6439, dep_loss: 2.0344, num_positive: 46.6000
+
+2022-03-21 20:11:46,770 - INFO - Epoch [1/1][240/397]	lr: 0.00223, eta: 0:03:07, time: 1.164, data_time: 0.096, transfer_time: 0.022, forward_time: 0.341, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:46,770 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.3935, hm_loss: 3.7923, dep_loss: 1.6012, num_positive: 43.2000
+
+2022-03-21 20:11:52,797 - INFO - Epoch [1/1][245/397]	lr: 0.00214, eta: 0:03:01, time: 1.203, data_time: 0.143, transfer_time: 0.021, forward_time: 0.331, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:52,798 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6561, hm_loss: 3.5435, dep_loss: 2.1125, num_positive: 33.4000
+
+2022-03-21 20:11:58,587 - INFO - Epoch [1/1][250/397]	lr: 0.00205, eta: 0:02:55, time: 1.158, data_time: 0.088, transfer_time: 0.021, forward_time: 0.345, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:11:58,587 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5036, hm_loss: 3.5847, dep_loss: 1.9189, num_positive: 43.4000
+
+2022-03-21 20:12:04,450 - INFO - Epoch [1/1][255/397]	lr: 0.00196, eta: 0:02:49, time: 1.174, data_time: 0.086, transfer_time: 0.023, forward_time: 0.358, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:04,450 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6116, hm_loss: 3.9105, dep_loss: 1.7011, num_positive: 41.4000
+
+2022-03-21 20:12:10,290 - INFO - Epoch [1/1][260/397]	lr: 0.00186, eta: 0:02:43, time: 1.170, data_time: 0.106, transfer_time: 0.021, forward_time: 0.338, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:10,290 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7968, hm_loss: 3.7857, dep_loss: 2.0111, num_positive: 30.0000
+
+2022-03-21 20:12:16,318 - INFO - Epoch [1/1][265/397]	lr: 0.00176, eta: 0:02:37, time: 1.205, data_time: 0.133, transfer_time: 0.022, forward_time: 0.343, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:16,318 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4377, hm_loss: 3.5404, dep_loss: 1.8973, num_positive: 48.8000
+
+2022-03-21 20:12:22,113 - INFO - Epoch [1/1][270/397]	lr: 0.00167, eta: 0:02:31, time: 1.160, data_time: 0.092, transfer_time: 0.024, forward_time: 0.340, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:22,113 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.3360, hm_loss: 3.6881, dep_loss: 1.6479, num_positive: 40.2000
+
+2022-03-21 20:12:27,935 - INFO - Epoch [1/1][275/397]	lr: 0.00157, eta: 0:02:25, time: 1.164, data_time: 0.082, transfer_time: 0.024, forward_time: 0.356, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:27,935 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.4021, hm_loss: 4.4536, dep_loss: 1.9485, num_positive: 19.2000
+
+2022-03-21 20:12:33,770 - INFO - Epoch [1/1][280/397]	lr: 0.00147, eta: 0:02:19, time: 1.165, data_time: 0.100, transfer_time: 0.021, forward_time: 0.339, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:33,771 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5058, hm_loss: 3.7302, dep_loss: 1.7756, num_positive: 36.4000
+
+2022-03-21 20:12:39,788 - INFO - Epoch [1/1][285/397]	lr: 0.00137, eta: 0:02:13, time: 1.204, data_time: 0.141, transfer_time: 0.022, forward_time: 0.336, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:39,788 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.2077, hm_loss: 4.0961, dep_loss: 2.1117, num_positive: 18.2000
+
+2022-03-21 20:12:45,618 - INFO - Epoch [1/1][290/397]	lr: 0.00127, eta: 0:02:07, time: 1.167, data_time: 0.089, transfer_time: 0.022, forward_time: 0.352, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:45,619 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.8446, hm_loss: 3.8648, dep_loss: 1.9798, num_positive: 35.4000
+
+2022-03-21 20:12:51,444 - INFO - Epoch [1/1][295/397]	lr: 0.00118, eta: 0:02:01, time: 1.165, data_time: 0.087, transfer_time: 0.021, forward_time: 0.352, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:51,444 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6018, hm_loss: 3.6584, dep_loss: 1.9434, num_positive: 41.2000
+
+2022-03-21 20:12:57,329 - INFO - Epoch [1/1][300/397]	lr: 0.00108, eta: 0:01:55, time: 1.176, data_time: 0.103, transfer_time: 0.023, forward_time: 0.340, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:12:57,329 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4070, hm_loss: 3.7361, dep_loss: 1.6709, num_positive: 30.4000
+
+2022-03-21 20:13:03,336 - INFO - Epoch [1/1][305/397]	lr: 0.00099, eta: 0:01:49, time: 1.201, data_time: 0.145, transfer_time: 0.021, forward_time: 0.331, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:03,336 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5567, hm_loss: 3.7490, dep_loss: 1.8076, num_positive: 34.4000
+
+2022-03-21 20:13:09,115 - INFO - Epoch [1/1][310/397]	lr: 0.00090, eta: 0:01:43, time: 1.156, data_time: 0.086, transfer_time: 0.022, forward_time: 0.349, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:09,115 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.2779, hm_loss: 3.6993, dep_loss: 1.5785, num_positive: 49.0000
+
+2022-03-21 20:13:14,972 - INFO - Epoch [1/1][315/397]	lr: 0.00081, eta: 0:01:37, time: 1.172, data_time: 0.091, transfer_time: 0.022, forward_time: 0.357, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:14,972 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4905, hm_loss: 3.6602, dep_loss: 1.8303, num_positive: 42.2000
+
+2022-03-21 20:13:20,815 - INFO - Epoch [1/1][320/397]	lr: 0.00072, eta: 0:01:31, time: 1.168, data_time: 0.109, transfer_time: 0.022, forward_time: 0.330, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:20,815 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7076, hm_loss: 3.7841, dep_loss: 1.9235, num_positive: 24.2000
+
+2022-03-21 20:13:26,857 - INFO - Epoch [1/1][325/397]	lr: 0.00064, eta: 0:01:25, time: 1.208, data_time: 0.146, transfer_time: 0.023, forward_time: 0.339, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:26,857 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7545, hm_loss: 3.8412, dep_loss: 1.9133, num_positive: 45.6000
+
+2022-03-21 20:13:32,619 - INFO - Epoch [1/1][330/397]	lr: 0.00056, eta: 0:01:19, time: 1.152, data_time: 0.084, transfer_time: 0.023, forward_time: 0.342, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:32,619 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.3479, hm_loss: 3.5499, dep_loss: 1.7980, num_positive: 42.8000
+
+2022-03-21 20:13:38,430 - INFO - Epoch [1/1][335/397]	lr: 0.00049, eta: 0:01:13, time: 1.163, data_time: 0.092, transfer_time: 0.023, forward_time: 0.347, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:38,430 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6776, hm_loss: 3.7928, dep_loss: 1.8848, num_positive: 35.2000
+
+2022-03-21 20:13:44,292 - INFO - Epoch [1/1][340/397]	lr: 0.00042, eta: 0:01:07, time: 1.171, data_time: 0.100, transfer_time: 0.021, forward_time: 0.347, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:44,292 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.8355, hm_loss: 3.8085, dep_loss: 2.0270, num_positive: 51.4000
+
+2022-03-21 20:13:50,312 - INFO - Epoch [1/1][345/397]	lr: 0.00035, eta: 0:01:01, time: 1.206, data_time: 0.135, transfer_time: 0.021, forward_time: 0.347, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:50,313 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4584, hm_loss: 3.4718, dep_loss: 1.9866, num_positive: 68.8000
+
+2022-03-21 20:13:56,112 - INFO - Epoch [1/1][350/397]	lr: 0.00029, eta: 0:00:55, time: 1.160, data_time: 0.091, transfer_time: 0.022, forward_time: 0.349, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:13:56,113 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 6.0743, hm_loss: 3.8736, dep_loss: 2.2008, num_positive: 20.0000
+
+2022-03-21 20:14:01,870 - INFO - Epoch [1/1][355/397]	lr: 0.00023, eta: 0:00:49, time: 1.152, data_time: 0.081, transfer_time: 0.023, forward_time: 0.346, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:01,870 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7957, hm_loss: 4.1383, dep_loss: 1.6574, num_positive: 29.8000
+
+2022-03-21 20:14:07,690 - INFO - Epoch [1/1][360/397]	lr: 0.00018, eta: 0:00:43, time: 1.163, data_time: 0.114, transfer_time: 0.022, forward_time: 0.330, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:07,690 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.4653, hm_loss: 3.6710, dep_loss: 1.7944, num_positive: 46.0000
+
+2022-03-21 20:14:13,710 - INFO - Epoch [1/1][365/397]	lr: 0.00014, eta: 0:00:38, time: 1.204, data_time: 0.137, transfer_time: 0.022, forward_time: 0.348, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:13,710 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5334, hm_loss: 3.6679, dep_loss: 1.8655, num_positive: 33.2000
+
+2022-03-21 20:14:19,488 - INFO - Epoch [1/1][370/397]	lr: 0.00010, eta: 0:00:32, time: 1.156, data_time: 0.086, transfer_time: 0.021, forward_time: 0.348, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:19,489 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5264, hm_loss: 3.7329, dep_loss: 1.7936, num_positive: 48.2000
+
+2022-03-21 20:14:25,315 - INFO - Epoch [1/1][375/397]	lr: 0.00007, eta: 0:00:26, time: 1.164, data_time: 0.086, transfer_time: 0.022, forward_time: 0.355, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:25,315 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.6281, hm_loss: 3.6198, dep_loss: 2.0083, num_positive: 46.2000
+
+2022-03-21 20:14:31,123 - INFO - Epoch [1/1][380/397]	lr: 0.00004, eta: 0:00:20, time: 1.162, data_time: 0.109, transfer_time: 0.022, forward_time: 0.328, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:31,124 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7078, hm_loss: 3.8107, dep_loss: 1.8970, num_positive: 44.0000
+
+2022-03-21 20:14:37,076 - INFO - Epoch [1/1][385/397]	lr: 0.00002, eta: 0:00:14, time: 1.191, data_time: 0.142, transfer_time: 0.023, forward_time: 0.329, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:37,076 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.9205, hm_loss: 4.0763, dep_loss: 1.8442, num_positive: 38.6000
+
+2022-03-21 20:14:42,837 - INFO - Epoch [1/1][390/397]	lr: 0.00001, eta: 0:00:08, time: 1.150, data_time: 0.081, transfer_time: 0.022, forward_time: 0.352, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:42,837 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.5410, hm_loss: 3.7439, dep_loss: 1.7971, num_positive: 30.2000
+
+2022-03-21 20:14:48,312 - INFO - Epoch [1/1][395/397]	lr: 0.00000, eta: 0:00:02, time: 1.098, data_time: 0.054, transfer_time: 0.022, forward_time: 0.321, loss_parse_time: 0.000 memory: 8628, 
+2022-03-21 20:14:48,313 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.7267, hm_loss: 3.7175, dep_loss: 2.0092, num_positive: 29.4000
+

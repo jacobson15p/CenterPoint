@@ -14,6 +14,7 @@ from matplotlib import pyplot as plt
 
 from ..registry import DETECTORS
 from .. import builder
+from ..utils.finetune_utils import FrozenBatchNorm2d
 from det3d.models.losses.centernet_loss import FastFocalLoss, RegLoss
 from det3d.torchie.trainer import load_checkpoint
 
@@ -130,8 +131,8 @@ class BaseHead(nn.Module):
     super(BaseHead, self).__init__()
     print('Creating model...')
     self.model = builder.build_backbone(backbone)
-    self.model = load_model(self.model,'/code/CenterPoint/pretrained_weights/ddd_3dop.pth')
-    self.model.to(torch.device('cuda'))
+    #elf.model = load_model(self.model,'/code/CenterPoint/pretrained_weights/ddd_3dop.pth')
+    #self.model.to(torch.device('cuda'))
 
     self.mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 1, 3)
     self.std = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(1, 1, 3)
@@ -145,6 +146,8 @@ class BaseHead(nn.Module):
     self.crit = FastFocalLoss()
     self.crit_reg = RegLoss()
     self.pretrained= pretrained
+
+    self.init_weights(pretrained=pretrained)
 
   def init_weights(self, pretrained=None):
     if pretrained is None:
@@ -172,11 +175,7 @@ class BaseHead(nn.Module):
 
   def forward(self, x, return_loss = True, meta=None):
     images = x['images']
-    images = images.to(torch.device('cuda'))
-    x1 = torch.load('image_test1.pth')
-    x2 = torch.load('image_test2.pth')
-    images = x2
-    print(images.shape)
+    #images = images.to(torch.device('cuda'))
     
     output = self.process(images)
     
@@ -188,9 +187,9 @@ class BaseHead(nn.Module):
       dep_loss = self.crit_reg(output['dep'], pred_dict['mask_cam'][0], pred_dict['ind_cam'][0],
         pred_dict['dep'][0].unsqueeze(-1))
 
-      loss = hm_loss + dep_loss
+      loss = hm_loss + 0.1*dep_loss
 
-      losses = {'loss': loss, 'hm_loss': hm_loss.detach().cpu(), 'dep_loss': dep_loss.detach().cpu(),'num_positive': pred_dict['mask_cam'][0].float().sum(),}
+      losses = {'loss': loss, 'hm_loss': hm_loss.detach().cpu(), 'dep_loss': 0.1*dep_loss.detach().cpu(),'num_positive': pred_dict['mask_cam'][0].float().sum(),}
       rets.append(losses)
 
       """
@@ -221,9 +220,9 @@ class BaseHead(nn.Module):
       dep_loss = self.crit_reg(output['dep'], pred_dict['mask_cam'][0], pred_dict['ind_cam'][0],
         pred_dict['dep'][0].unsqueeze(-1))
 
-      loss = hm_loss + dep_loss
+      loss = hm_loss + 0.1*dep_loss
 
-      losses = {'loss': loss, 'hm_loss': hm_loss.detach().cpu(), 'dep_loss': dep_loss.detach().cpu(),'num_positive': pred_dict['mask_cam'][0].float().sum(),}
+      losses = {'loss': loss, 'hm_loss': hm_loss.detach().cpu(), 'dep_loss': 0.1*dep_loss.detach().cpu(),'num_positive': pred_dict['mask_cam'][0].float().sum(),}
       rets.append(losses)
 
       """
@@ -244,31 +243,19 @@ class BaseHead(nn.Module):
 @DETECTORS.register_module
 class DddHead(BaseHead):
   def __init__(self, tasks, backbone, pretrained=None, train_cfg=None, test_cfg=None):
-    super(DddHead, self).__init__(tasks, backbone)
+    super(DddHead, self).__init__(tasks, backbone, pretrained)
     self.calib = np.array([[707.0493, 0, 604.0814, 45.75831],
                            [0, 707.0493, 180.5066, -0.3454157],
                            [0, 0, 1., 0.004981016]], dtype=np.float32)
   
   def process(self, images):
-    #inp_image = np.zeros((3,384,1280),np.float32)
-    #inp_image[:,:375,:1242] = images
-    #images = inp_image
-    #plt.imshow(images[0].permute(1,2,0))
-    #plt.savefig('image_test_2')
-    #images = torch.load('tensor_test.pth')
+
     output = self.model(images)[-1]
     output['hm'] = output['hm'].sigmoid_()
-    #plt.figure(2)
-    #print(hm_pred.shape)
-    #plt.imshow(hm_pred[0].permute(1,2,0))
-    #plt.savefig('hm_kitti_pred')
     #output['dep'] = 1. / (output['dep'].sigmoid() + 1e-6) - 1.
     #wh = output['wh'] #if self.opt.reg_bbox else None
     #reg = output['reg'] #if self.opt.reg_offset else None
-
-    
-    #dets = ddd_decode(output['hm'], output['dep'], wh=wh, reg=reg)
-    #       
+    #      
     return output
 
 
@@ -279,6 +266,12 @@ class DddHead(BaseHead):
         keep_inds = (results[j][:, -1] > 0.2)
         results[j] = results[j][keep_inds]
     return results
+
+  def freeze(self):
+    for p in self.parameters():
+        p.requires_grad = False
+    FrozenBatchNorm2d.convert_frozen_batchnorm(self)
+    return self
 
 class Classhead(object):
   def __init__(self, tasks):

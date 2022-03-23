@@ -52,11 +52,11 @@ def convert_box(info):
     return detection 
 
 def main():
-    cfg = Config.fromfile('configs/waymo/2D/waymo_centernet_dla34.py')
+    cfg = Config.fromfile('/code/CenterPoint/configs/waymo/voxelnet/waymo_centerpoint_voxelnet_1x.py')
     
     model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
 
-    dataset = build_dataset(cfg.data.val)
+    dataset = build_dataset(cfg.data.test)
 
     
     data_loader = DataLoader(
@@ -69,12 +69,9 @@ def main():
         pin_memory=False,
     )
 
-    for x in data_loader:
-        #print(x['images'])
-        break
 
-    '''
-    checkpoint = load_checkpoint(model, 'work_dirs/centerpoint_pillar_512_demo/latest.pth', map_location="cpu")
+    
+    checkpoint = load_checkpoint(model, '/code/CenterPoint/pretrained_weights/voxelnet_3x_epoch_36.pth', map_location="cpu")
     model.eval()
 
     model = model.cuda()
@@ -86,10 +83,10 @@ def main():
     detections  = [] 
 
     for i, data_batch in enumerate(data_loader):
-        info = dataset._nusc_infos[i]
+        info = dataset._waymo_infos[i]
         gt_annos.append(convert_box(info))
 
-        points = data_batch['points'][:, 1:4].cpu().numpy()
+        points = data_batch['points'][0][:,1:4].cpu().numpy()
         with torch.no_grad():
             outputs = batch_processor(
                 model, data_batch, train_mode=False, local_rank=0,
@@ -131,7 +128,8 @@ def main():
     video.release()
 
     print("Successfully save video in the main folder")
-    '''
+    
+    
 
 if __name__ == "__main__":
     main()

@@ -52,7 +52,12 @@ def example_to_device(example, device, non_blocking=False) -> dict:
             "gt_boxes_and_cls",
             "images"
         ]:
-            example_torch[k] = v.to(device, non_blocking=non_blocking)
+            #example_torch[k] = v.to(device, non_blocking=non_blocking)
+            if k in ["images","coordinates","gt_boxes_and_cls",]:
+                example_torch[k] = v.to(device, non_blocking=non_blocking)
+            else:
+                example_torch[k] = torch.tensor(v).to(device, non_blocking=non_blocking)
+
         elif k == "calib":
             calib = {}
             for k1, v1 in v.items():

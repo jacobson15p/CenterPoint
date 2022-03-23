@@ -19,7 +19,7 @@ model = dict(
     type='FusionDetector',
     first_stage_cfg=dict(
         type="VoxelNet",
-        pretrained='/code/CenterPoint/pretrained_weights/epoch_36.pth',
+        pretrained='/code/CenterPoint/pretrained_weights/voxelnet_3x_epoch_36.pth',
         reader=dict(
             type="VoxelFeatureExtractorV3",
             num_input_features=5
@@ -58,16 +58,19 @@ model = dict(
     ],
 
     image_head_cfg=dict(
-        type="DddHead",
-        tasks=tasks,
-        pretrained="/code/CenterPoint/work_dirs/waymo_centernet_dla34/epoch_1.pth",
-        backbone=dict(
-            type="DLASeg",
-            base_name='dla34',
-            heads={'hm': 3,'dep': 1,'wh': 2},
-            down_ratio=4,
-            head_conv=256,),
-    ),
+    type="DddHead",
+    tasks=tasks,
+    pretrained='/code/CenterPoint/pretrained_weights/centernet_epoch_12.pth',
+    backbone=dict(
+        type="DLASegv2",
+        base_name='dla34',
+        pretrained=True,
+        heads={'hm': 3,'dep': 1,'wh': 2,'reg': 2,'rot': 8,'dim': 3},
+        down_ratio=4,
+        final_kernel=1,
+        last_level=5,
+        head_conv=256,),
+),
 
 
     roi_head=dict(
@@ -185,7 +188,8 @@ voxel_generator = dict(
     range=[-75.2, -75.2, -2, 75.2, 75.2, 4],
     voxel_size=[0.1, 0.1, 0.15],
     max_points_in_voxel=5,
-    max_voxel_num=[150000, 200000]
+    max_voxel_num=[150000, 200000],
+    out_size_factor=get_downsample_factor(model),
 )
 
 train_pipeline = [
@@ -207,7 +211,7 @@ test_pipeline = [
 
 train_anno = "/waymo_data/infos_train_01sweeps_filter_zero_gt.pkl"
 val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
-test_anno = None
+test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
     samples_per_gpu=2,
@@ -252,7 +256,7 @@ optimizer = dict(
     type="adam", amsgrad=0.0, wd=0.01, fixed_wd=True, moving_average=False,
 )
 lr_config = dict(
-    type="one_cycle", lr_max=0.003, moms=[0.95, 0.85], div_factor=10.0, pct_start=0.4,
+    type="one_cycle", lr_max=0.0005, moms=[0.95, 0.85], div_factor=10.0, pct_start=0.4,
 )
 
 checkpoint_config = dict(interval=1)

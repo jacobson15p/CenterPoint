@@ -158,8 +158,8 @@ class LoadPointCloudFromFile(object):
             obj = get_obj(path)
             points = read_single_waymo(obj)
             res["lidar"]["points"] = points
-            #res['cam']['images'] = obj['images']
-            res['cam']['images'] = cv2.imread('/code/CenterPoint/000052.png')
+            res['cam']['images'] = obj['images']
+            #res['cam']['images'] = cv2.imread('/code/CenterPoint/000052.png')
             res['calib'] = obj['camera_calibrations']
 
             if nsweeps > 1: 

@@ -19,10 +19,13 @@ model = dict(
     type="DddHead",
     tasks=tasks,
     backbone=dict(
-        type="DLASeg",
+        type="DLASegv2",
         base_name='dla34',
-        heads={'hm': 3,'dep': 1,'wh': 2},
+        pretrained=True,
+        heads={'hm': 3,'dep': 1,'wh': 2,'reg': 2,'rot': 8,'dim': 3},
         down_ratio=4,
+        final_kernel=1,
+        last_level=5,
         head_conv=256,),
 )
 
@@ -103,6 +106,7 @@ voxel_generator = dict(
     voxel_size=[0.1, 0.1, 0.15],
     max_points_in_voxel=5,
     max_voxel_num=150000,
+    out_size_factor=4,
 )
 
 train_pipeline = [
@@ -124,10 +128,10 @@ test_pipeline = [
 
 train_anno = "/waymo_data/infos_train_01sweeps_filter_zero_gt.pkl"
 val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
-test_anno = None
+test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=1,
+    samples_per_gpu=2,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
@@ -168,7 +172,7 @@ optimizer = dict(
     type="adam", amsgrad=0.0, wd=0.01, fixed_wd=True, moving_average=False,
 )
 lr_config = dict(
-    type="one_cycle", lr_max=0.003, moms=[0.95, 0.85], div_factor=10.0, pct_start=0.4,
+    type="one_cycle", lr_max=0.0005, moms=[0.95, 0.85], div_factor=10.0, pct_start=0.4,
 )
 
 checkpoint_config = dict(interval=1)

@@ -52,6 +52,7 @@ assigner = dict(
     gaussian_overlap=0.1,
     max_objs=500,
     min_radius=2,
+    cam_down_ratio=4,
 )
 
 
@@ -77,12 +78,12 @@ test_cfg = dict(
 # dataset settings
 dataset_type = "WaymoDataset"
 nsweeps = 1
-data_root = "data/Waymo"
+data_root = "/waymo_data"
 
 db_sampler = dict(
     type="GT-AUG",
     enable=False,
-    db_info_path="data/Waymo/dbinfos_train_1sweeps_withvelo.pkl",
+    db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
         dict(PEDESTRIAN=10),
@@ -140,9 +141,9 @@ test_pipeline = [
     dict(type="Reformat"),
 ]
 
-train_anno = "data/Waymo/infos_train_01sweeps_filter_zero_gt.pkl"
-val_anno = "data/Waymo/infos_val_01sweeps_filter_zero_gt.pkl"
-test_anno = None
+train_anno = "/waymo_data/infos_train_01sweeps_filter_zero_gt.pkl"
+val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
+test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
     samples_per_gpu=4,

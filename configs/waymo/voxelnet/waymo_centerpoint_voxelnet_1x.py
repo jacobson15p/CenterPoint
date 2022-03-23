@@ -122,6 +122,7 @@ voxel_generator = dict(
     voxel_size=[0.1, 0.1, 0.15],
     max_points_in_voxel=5,
     max_voxel_num=150000,
+    out_size_factor=4,
 )
 
 train_pipeline = [
@@ -142,10 +143,10 @@ test_pipeline = [
 ]
 train_anno = "/waymo_data/infos_train_01sweeps_filter_zero_gt.pkl"
 val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
-test_anno = None
+test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=1,
+    samples_per_gpu=4,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,

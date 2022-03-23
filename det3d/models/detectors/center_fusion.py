@@ -4,6 +4,7 @@ from .base import BaseDetector
 from .. import builder
 import torch 
 from torch import nn 
+from matplotlib import pyplot as plt
 
 @DETECTORS.register_module
 class FusionDetector(BaseDetector):
@@ -20,12 +21,14 @@ class FusionDetector(BaseDetector):
     ):
         super(FusionDetector, self).__init__()
         self.single_det = builder.build_detector(first_stage_cfg, **kwargs)
+        self.image_head= builder.build_detector(image_head_cfg)
         self.NMS_POST_MAXSIZE = NMS_POST_MAXSIZE
 
         if freeze:
             print("Freeze First Stage Network")
             # we train the model in two steps 
             self.single_det = self.single_det.freeze()
+            self.image_head.freeze()
         self.bbox_head = self.single_det.bbox_head
 
         self.second_stage = nn.ModuleList()
@@ -38,7 +41,6 @@ class FusionDetector(BaseDetector):
         
         self.num_point = num_point
 
-        self.image_head= builder.build_detector(image_head_cfg)
 
     def combine_loss(self, one_stage_loss, roi_loss, tb_dict):
         one_stage_loss['loss'][0] += (roi_loss)
@@ -165,10 +167,8 @@ class FusionDetector(BaseDetector):
         if len(out) == 5:
             one_stage_pred, bev_feature, voxel_feature, final_feature, one_stage_loss = out 
             example['voxel_feature'] = voxel_feature
-            print("USED 5")
         elif len(out) == 3:
             one_stage_pred, bev_feature, one_stage_loss = out 
-            print("USED 3")
         else:
             raise NotImplementedError
 

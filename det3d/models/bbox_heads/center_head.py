@@ -451,6 +451,7 @@ class CenterHead(nn.Module):
                     ret[k] = torch.cat([ret[i][k] for ret in rets])
 
             ret['metadata'] = metas[0][i]
+            ret['hm'] = torch.sigmoid(preds_dict['hm'])
             ret_list.append(ret)
 
         return ret_list 
@@ -553,13 +554,13 @@ class CenterHead(nn.Module):
 
 
             # Visualization code part
-            """
+            
             imdep= cam_dep
             print(np.max(imdep))
             fig = plt.figure(figsize=(6, 3.2))
             ax = fig.add_subplot(111)
             ax.set_title('Depth')
-            plt.imshow(imdep)
+            plt.imshow(imdep.transpose(1,2,0))
             ax.set_aspect('equal')
             cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
             cax.get_xaxis().set_visible(False)
@@ -569,7 +570,8 @@ class CenterHead(nn.Module):
             plt.colorbar(orientation='vertical')
             plt.savefig('/code/CenterPoint/DepthImage.jpeg')
 
-            imimg= np.moveaxis(cam_hm, 0, -1)
+            #imimg= np.moveaxis(cam_hm, 0, -1)
+            imimg = cam_hm.permute(1,2,0)
             print("IMAGE SHAPE HM ")
             print(imimg.shape)
             fig = plt.figure(figsize=(6, 3.2))
@@ -584,7 +586,8 @@ class CenterHead(nn.Module):
             cax.set_frame_on(False)
             plt.savefig("/code/CenterPoint/Image.jpeg")
 
-            imimg= np.moveaxis(hm_new,0, -1)
+            #imimg= np.moveaxis(hm_new,0, -1)
+            imimg = hm_new.transpose(1,2,0)
             print("IMAGE SHAPE HM ")
             print(imimg.shape)
             fig = plt.figure(figsize=(6, 3.2))
@@ -598,7 +601,8 @@ class CenterHead(nn.Module):
             cax.patch.set_alpha(0)
             cax.set_frame_on(False)
             plt.savefig("/code/CenterPoint/Image_BEV.jpeg")
-            """
+            
+            
 
             preds_dicts[0]['hm'][batch_idx]= torch.add(preds_dicts[0]['hm'][batch_idx],
                                                         torch.tensor(hm_new, dtype=preds_dicts[0]['hm'].dtype, device=preds_dicts[0]['hm'].device))

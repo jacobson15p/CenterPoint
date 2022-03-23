@@ -158,13 +158,12 @@ class Preprocess(object):
             res["lidar"]["annotations"] = gt_dict
 
         #Preprocess images
-        torch.save(res['cam']['images'],'image_test4.pth')
         mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 1, 3)
         std = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(1, 1, 3)
 
-        scaled_image = np.zeros((384,1280,3))
-        scaled_image[:375,:1242,:] = res['cam']['images']
-        res['cam']['images'] = scaled_image
+        #scaled_image = np.zeros((384,1280,3))
+        #scaled_image[:375,:1242,:] = res['cam']['images']
+        #res['cam']['images'] = scaled_image
 
 
         res['cam']['images'] = res['cam']['images'].astype(np.float32)/ 255. 
@@ -183,6 +182,7 @@ class Voxelization(object):
         self.voxel_size = cfg.voxel_size
         self.max_points_in_voxel = cfg.max_points_in_voxel
         self.max_voxel_num = [cfg.max_voxel_num, cfg.max_voxel_num] if isinstance(cfg.max_voxel_num, int) else cfg.max_voxel_num
+        self.out_size_factor = cfg.out_size_factor
 
         self.double_flip = cfg.get('double_flip', False)
 
@@ -223,6 +223,12 @@ class Voxelization(object):
             range=pc_range,
             size=voxel_size
         )
+
+        res['hm_pixel_size'] = self.out_size_factor * voxel_size[0]
+        grid_size = res["lidar"]["voxels"]["shape"] 
+        feature_map_size = grid_size[:2] // self.out_size_factor
+        res['feature_map_size'] = feature_map_size
+        res['range'] = grid_size *  voxel_size[0]
 
         double_flip = self.double_flip and (res["mode"] != 'train')
 
@@ -417,7 +423,11 @@ class AssignLabel(object):
                         ct_int = ct.astype(np.int32)
 
                         draw_gaussian(hm_cam[cls_id], ct, radius)
-                        ind_cam[k] = ct_int[0] * cam_feature_map_size[0] + ct_int[1]
+                        ind_cam[k] = ct_int[1] * cam_feature_map_size[1] + ct_int[0]
+                        #ind_test = ct_int[1] * cam_feature_map_size[1] + ct_int[0]
+                        #feat = torch.tensor(hm_cam).unsqueeze(0).permute(0,2,3,1)
+                        #feat = feat.view(feat.size(0), -1, feat.size(3))
+                        #print(feat[0,ind_test,cls_id].item(),hm_cam[cls_id,ct_int[1],ct_int[0]])
                         mask_cam[k] = 1 
                         cat_cam[k] = cls_id
                         dep[k] = res['cam']['annotations']['depth_map'][ct_int[1]][ct_int[0]]
@@ -511,8 +521,7 @@ class AssignLabel(object):
             example.update({'gt_boxes_and_cls': gt_boxes_and_cls})
 
             example.update({'hm': hms, 'anno_box': anno_boxs, 'ind': inds, 'mask': masks, 'cat': cats, 'gt_boxes_cam': gt_boxes_cam, 'hm_cam': hms_cam, 'ind_cam': inds_cam, 'mask_cam': masks_cam,
-                'cat_cam': cats_cam, 'dep': deps, 'dep_map': res['cam']['annotations']['depth_map'],'hm_pixel_size': self.out_size_factor * voxel_size[0], 'range':grid_size *  voxel_size[0],
-                'feature_map_size': feature_map_size},)
+                'cat_cam': cats_cam, 'dep': deps, 'dep_map': res['cam']['annotations']['depth_map']},)
         else:
             pass
 

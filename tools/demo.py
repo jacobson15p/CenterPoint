@@ -54,14 +54,13 @@ def convert_box(info):
 
 
 def main():
-    cfg = Config.fromfile('/code/CenterPoint/configs/waymo/2D/waymo_centernet_dla34_v1.py')
+    cfg = Config.fromfile('configs/waymo/voxelnet/fusion/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_fusion.py')
+    #cfg = Config.fromfile('configs/waymo/2D/waymo_centernet_dla34.py')
     
     model = build_detector(cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
-    #model = load_model(model,'/code/CenterPoint/pretrained_weights/ddd_3dop.pth')
-    weights = torch.load('/code/CenterPoint/pretrained_weights/ddd_3dop.pth')
-    #weights['state_dict'].pop("module.base.fc.weight")
-    #weights['state_dict'].pop("module.base.fc.bias")
-    #model.load_state_dict(weights['state_dict'])
+    #checkpoint = load_checkpoint(model, 'work_dirs/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_fusion/epoch_1.pth', map_location="cpu")
+    model = model.cuda()
+    model.eval()
 
     dataset = build_dataset(cfg.data.train)
 
@@ -76,27 +75,22 @@ def main():
         pin_memory=False,
     )
 
-
-    for x in data_loader:
-        #print(x['images'].shape)
-        #plt.imshow(x['images'][0].permute(1,2,0))
-        #plt.savefig('image_test_1')
-        #hm = x['hm_cam'][0][0].view(3,-1)
-        #print(torch.max(hm))
-        #for i in x['ind_cam'][0][0]:
-        #    if i == 0:
-        #        break
-        #    print(i)
-        #    print(hm[:,i])
+    for i,data_batch in enumerate(data_loader):
+        #plt.imshow(data_batch['hm'][0][0].permute(1,2,0))
+        #plt.savefig('hm_gt')
         #plt.figure(1)
-        #plt.imshow(x['hm_cam'][0][0].permute(1,2,0))
-        #plt.savefig('hm_kitti')
-        plt.figure(2)
         with torch.no_grad():
-            model.eval()
-            hm_pred = model(x,return_loss=False)['results']['hm'].detach().cpu()
-        plt.imshow(hm_pred[0].permute(1,2,0))
-        plt.savefig('hm_kitti_pred_1')
+            outputs = batch_processor(
+                model, data_batch, train_mode=False, local_rank=0,
+            )
+            #model.eval()
+            #hm_pred = model(data_batch,return_loss=False)['results']['hm'].detach().cpu()
+            #dep_pred = model(x,return_loss=False)['results']['dep'].detach().cpu()
+        #plt.imshow(outputs['results']['hm'][0].permute(1,2,0).cpu().numpy())
+        #plt.savefig('hm_centernet_waymo_pred')
+        #plt.figure(2)
+        #plt.imshow(data_batch['images'][0].permute(1,2,0))
+        #plt.savefig('image_test')
         break
     
     '''

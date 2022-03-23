@@ -223,6 +223,7 @@ def build_optimizer(model, optimizer_cfg):
         # set param-wise lr and weight decay
         params = []
         for name, param in model.named_parameters():
+            #if 'hm' in name or 'dep' in name:
             param_group = {"params": [param]}
             if not param.requires_grad:
                 # FP16 training needs to copy gradient/weight between master
