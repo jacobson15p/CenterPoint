@@ -3,6 +3,7 @@ from .single_stage import SingleStageDetector
 from det3d.torchie.trainer import load_checkpoint
 import torch 
 from copy import deepcopy 
+from matplotlib import pyplot as plt
 
 @DETECTORS.register_module
 class VoxelNet(SingleStageDetector):
@@ -67,11 +68,11 @@ class VoxelNet(SingleStageDetector):
         preds, final_feat = self.bbox_head(x)
 
 
-        print("example length")
-        print(example['images'].shape) #[4,3,1280,1920]
-        print("PREDS")
-        print(len(preds))
-        print(preds[0].keys())
+        #print("example length")
+        #print(example['images'].shape) #[4,3,1280,1920]
+        #print("PREDS")
+        #print(len(preds))
+        #print(preds[0].keys())
 
 
         if return_loss:
@@ -108,9 +109,11 @@ class VoxelNet(SingleStageDetector):
                     new_pred[k] = v.detach() # will not have the gradient again. 
                 new_preds.append(new_pred)
 
-            boxes = self.bbox_head.predict_with_fusion(example, new_preds,image_out, self.test_cfg)
+            boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, new_preds,image_out, self.test_cfg)
+            bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
 
             return boxes, bev_feature, voxel_feature, final_feat, self.bbox_head.loss(example, preds, self.test_cfg)
         else:
-            boxes = self.bbox_head.predict_with_fusion(example, preds, image_out, self.test_cfg)
+            boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, preds, image_out, self.test_cfg)
+            bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
             return boxes, bev_feature, voxel_feature, final_feat, None 

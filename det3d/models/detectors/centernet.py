@@ -187,7 +187,7 @@ class BaseHead(nn.Module):
       dep_loss = self.crit_reg(output['dep'], pred_dict['mask_cam'][0], pred_dict['ind_cam'][0],
         pred_dict['dep'][0].unsqueeze(-1))
 
-      loss = hm_loss + 0.1*dep_loss
+      loss = hm_loss #+ 0.1*dep_loss
 
       losses = {'loss': loss, 'hm_loss': hm_loss.detach().cpu(), 'dep_loss': 0.1*dep_loss.detach().cpu(),'num_positive': pred_dict['mask_cam'][0].float().sum(),}
       rets.append(losses)

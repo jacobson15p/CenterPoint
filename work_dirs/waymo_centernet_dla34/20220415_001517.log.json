@@ -1,0 +1,2 @@
+{"mode": "train", "epoch": 1, "iter": 5, "lr": 5e-05, "time": 6.53986, "data_time": 2.91268, "memory": 26193, "transfer_time": 2.99877, "forward_time": 4.10091, "loss_parse_time": 4.10102, "loss": [28.01579], "hm_loss": [22.75458], "dep_loss": [5.26121], "num_positive": [135.8]}
+{"mode": "train", "epoch": 1, "iter": 10, "lr": 5e-05, "time": 3.81003, "data_time": 0.32009, "memory": 26193, "transfer_time": 0.39442, "forward_time": 1.33206, "loss_parse_time": 1.33215, "loss": [21.52659], "hm_loss": [16.9182], "dep_loss": [4.6084], "num_positive": [137.4]}

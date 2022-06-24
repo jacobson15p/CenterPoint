@@ -158,6 +158,7 @@ train_preprocessor = dict(
     global_scale_noise=[0.95, 1.05],
     db_sampler=db_sampler,
     class_names=class_names,
+    no_augmentation=True,
 )
 
 val_preprocessor = dict(
@@ -189,13 +190,13 @@ test_pipeline = [
     dict(type="Reformat"),
 ]
 
-train_anno = "data/Waymo/infos_train_01sweeps_filter_zero_gt.pkl"
-val_anno = "data/Waymo/infos_val_01sweeps_filter_zero_gt.pkl"
-test_anno = "data/Waymo/infos_test_01sweeps_filter_zero_gt.pkl"
+train_anno = "/waymo_data/infos_train_01sweeps_filter_zero_gt.pkl"
+val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
+test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=4,
-    workers_per_gpu=4,
+    samples_per_gpu=2,
+    workers_per_gpu=3,
     train=dict(
         type=dataset_type,
         root_path=data_root,

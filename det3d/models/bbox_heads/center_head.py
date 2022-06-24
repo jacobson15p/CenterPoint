@@ -23,6 +23,8 @@ except:
 from det3d.core.utils.circle_nms_jit import circle_nms
 
 import matplotlib.pyplot as plt
+import time
+from sklearn.cluster import DBSCAN
 
 
 class FeatureAdaption(nn.Module):
@@ -260,7 +262,8 @@ class CenterHead(nn.Module):
 
             #print(preds_dict['hm'].shape,example['hm'][task_id].shape, example['ind'][task_id].shape, example['mask'][task_id].shape, example['cat'][task_id].shape)
 
-            hm_loss = self.crit(preds_dict['hm'], example['hm'][task_id], example['ind'][task_id], example['mask'][task_id], example['cat'][task_id])
+            #hm_loss = self.crit(preds_dict['hm'], example['hm'][task_id], example['ind'][task_id], example['mask'][task_id], example['cat'][task_id])
+            hm_loss = torch.tensor([0]).cuda()
             #ind (batch x max_objects) get the object location, and only work with the category 
 
             target_box = example['anno_box'][task_id]
@@ -496,22 +499,23 @@ class CenterHead(nn.Module):
         front_extrinsics= example['calib']['FRONT_EXTRINSIC']
 
         # USE THIS FOR RESULT 
+        cam_bev_feats = []
         batch_idx=0
-        for cam_hm, cam_dep, front_intrinsic, front_extrinsic, viewrangemeters, feature_map_size, hm_pixel_size in zip(image_out['results']['hm'].cpu(), 
-            image_out['results']['dep'].cpu().numpy(), front_intrinsics.cpu().numpy(), front_extrinsics.cpu().numpy(),
+        for cam_hm, cam_dep, cam_features, front_intrinsic, front_extrinsic, viewrangemeters, feature_map_size, hm_pixel_size in zip(image_out['results']['hm'].cpu(), 
+            example['dep_map'][:,np.newaxis,...].cpu().numpy(),image_out['results']['feature_map'].cpu(), front_intrinsics.cpu().numpy(), front_extrinsics.cpu().numpy(),
             example['range'], example['feature_map_size'], example['hm_pixel_size']):
 
             # USE THIS FOR EXAMPLE TESTING 
-            # for cam_hm, cam_dep, front_intrinsic, front_extrinsic, viewrangemeters, feature_map_size, hm_pixel_size in zip(example['hm_cam'][0].cpu().numpy(), 
-            #     example['dep_map'], front_intrinsics.cpu().numpy(), front_extrinsics.cpu().numpy(),
-            #     example['range'], example['feature_map_size'], example['hm_pixel_size']):
+            #for cam_hm, cam_dep, front_intrinsic, front_extrinsic, viewrangemeters, feature_map_size, hm_pixel_size in zip(example['hm_cam'][0].cpu().numpy(), 
+            #        example['dep_map'][np.newaxis,...], front_intrinsics.cpu().numpy(), front_extrinsics.cpu().numpy(),
+            #        example['range'], example['feature_map_size'], example['hm_pixel_size']):
 
             # Assuming the down ratio is 4. 
             front_intrinsic/=4
             # USE THIS FOR RESULT 
+            
             pixel_unproject= np.array(np.meshgrid(np.linspace(1,cam_dep.shape[2],cam_dep.shape[2]),
-                                        np.linspace(1,cam_dep.shape[1],cam_dep.shape[1]))).T.reshape(-1, 2).astype(int)
-
+                                        np.linspace(1,cam_dep.shape[1],cam_dep.shape[1]))).T.reshape(-1, 2)
             # USE THIS FOR EXAMPLE TESTING 
             # pixel_unproject= np.array(np.meshgrid(np.linspace(1,cam_dep.shape[1],cam_dep.shape[1]),
             #                             np.linspace(1,cam_dep.shape[0],cam_dep.shape[0]))).T.reshape(-1, 2)
@@ -533,33 +537,48 @@ class CenterHead(nn.Module):
             pixel_unproject= (rotation_axis @ pixel_unproject.T)
             pixel_unproject= ((front_extrinsic[0:3,0:3] @ pixel_unproject) +  np.expand_dims(front_extrinsic[0:3,3], axis=1)).T          
 
-
             # Now x is pointing towards forward, y to left, and z up 
 
             pixel_unproject/=hm_pixel_size
-            hm_new= np.zeros((cam_hm.shape[0], feature_map_size[0], feature_map_size[1]))
-            index_hm_new=0
-            for task_hm in cam_hm:
-                pixel_with_taskHM= task_hm.T.reshape(-1,1)
-                pixel_unproject_withHM= np.hstack((pixel_unproject,pixel_with_taskHM))
-                pixel_unproject_withHM= pixel_unproject_withHM[pixel_unproject_withHM[:,0]< feature_map_size[0]/2]
-                pixel_unproject_withHM= pixel_unproject_withHM[pixel_unproject_withHM[:,0]> 0]
-                pixel_unproject_withHM= pixel_unproject_withHM[pixel_unproject_withHM[:,1]< feature_map_size[1]/2]
-                pixel_unproject_withHM= pixel_unproject_withHM[pixel_unproject_withHM[:,1]> -feature_map_size[1]/2]
-
-                for entry in pixel_unproject_withHM:
-                    hm_new[index_hm_new][int(feature_map_size[0]/2-entry[0]), int(feature_map_size[1]/2 + entry[1])] = entry[3]
-                index_hm_new+=1
             
+            hm_new= np.zeros((cam_hm.shape[0], feature_map_size[0], feature_map_size[1]))
+            cam_feats_new = np.zeros((cam_features.shape[0], feature_map_size[0], feature_map_size[1]))
+            
+            valid_mask = (pixel_unproject[:,0]< feature_map_size[0]/2) & (pixel_unproject[:,0]> 0) & (pixel_unproject[:,1]< feature_map_size[1]/2) & (pixel_unproject[:,1]> -feature_map_size[1]/2)
+            nonzero_mask = cam_hm[0].T.reshape(-1) > 1
+            class_thresholds = [0.9,0.8,0.1]
+            for channel_idx in range(cam_hm.shape[0]):
+                nonzero_mask = (cam_hm[channel_idx].T.reshape(-1) > class_thresholds[channel_idx]) | nonzero_mask
+            valid_mask = nonzero_mask.numpy() & valid_mask
+            
+            valid_length = np.sum(valid_mask)
+            #pixel_with_taskHM= cam_hm.T.reshape(cam_hm.shape[0],-1)[:,0:valid_length]
+            pixel_with_taskHM = np.zeros((cam_hm.shape[0],valid_length))
+            for channel_idx in range(cam_hm.shape[0]):
+                pixel_with_taskHM[channel_idx] = cam_hm[channel_idx].T.reshape(-1)[valid_mask]
 
+            #pixel_with_taskfeat= cam_features.T.reshape(cam_features.shape[0],-1,1)[:,0:valid_length,0]
+            pixel_with_taskfeat = np.zeros((cam_features.shape[0],valid_length))
+            for channel_idx in range(cam_features.shape[0]):
+                pixel_with_taskfeat[channel_idx] = cam_features[channel_idx].T.reshape(-1)[valid_mask]
+            
+            chans_hm = np.arange(0,cam_hm.shape[0],1)
+            chans_feats = np.arange(0,cam_features.shape[0],1)
+            pixel_unproject = pixel_unproject[valid_mask,:]
+            pixel_unproject[:,0] = (-1*pixel_unproject[:,0] + feature_map_size[0]/2)
+            pixel_unproject[:,1] = (pixel_unproject[:,1] + feature_map_size[1]/2)
+            hm_new[:,pixel_unproject[:,0].astype(int),pixel_unproject[:,1].astype(int)] = pixel_with_taskHM[chans_hm,:]
+            cam_feats_new[:,pixel_unproject[:,0].astype(int),pixel_unproject[:,1].astype(int)] = pixel_with_taskfeat[chans_feats,:]
+
+            hm_new = np.flip(np.rot90(hm_new,k=3,axes=(1,2)),axis=1)
+            cam_feats_new = np.flip(np.rot90(cam_feats_new,k=3,axes=(1,2)),axis=1)
 
             # Visualization code part
-            
+            '''
             imdep= cam_dep
-            print(np.max(imdep))
             fig = plt.figure(figsize=(6, 3.2))
             ax = fig.add_subplot(111)
-            ax.set_title('Depth')
+            ax.set_title('HM')
             plt.imshow(imdep.transpose(1,2,0))
             ax.set_aspect('equal')
             cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
@@ -567,13 +586,12 @@ class CenterHead(nn.Module):
             cax.get_yaxis().set_visible(False)
             cax.patch.set_alpha(0)
             cax.set_frame_on(False)
-            plt.colorbar(orientation='vertical')
-            plt.savefig('/code/CenterPoint/DepthImage.jpeg')
+            #plt.colorbar(orientation='vertical')
+            plt.savefig('DepthImage_cam.jpeg')
+            
 
             #imimg= np.moveaxis(cam_hm, 0, -1)
             imimg = cam_hm.permute(1,2,0)
-            print("IMAGE SHAPE HM ")
-            print(imimg.shape)
             fig = plt.figure(figsize=(6, 3.2))
             ax = fig.add_subplot(111)
             ax.set_title('Image')
@@ -584,12 +602,11 @@ class CenterHead(nn.Module):
             cax.get_yaxis().set_visible(False)
             cax.patch.set_alpha(0)
             cax.set_frame_on(False)
-            plt.savefig("/code/CenterPoint/Image.jpeg")
+            plt.savefig("Image_cam.jpeg")
+            
 
             #imimg= np.moveaxis(hm_new,0, -1)
             imimg = hm_new.transpose(1,2,0)
-            print("IMAGE SHAPE HM ")
-            print(imimg.shape)
             fig = plt.figure(figsize=(6, 3.2))
             ax = fig.add_subplot(111)
             ax.set_title('BEV Image')
@@ -600,16 +617,55 @@ class CenterHead(nn.Module):
             cax.get_yaxis().set_visible(False)
             cax.patch.set_alpha(0)
             cax.set_frame_on(False)
-            plt.savefig("/code/CenterPoint/Image_BEV.jpeg")
-            
-            
+            plt.savefig("Image_BEV_test.jpeg")
 
-            preds_dicts[0]['hm'][batch_idx]= torch.add(preds_dicts[0]['hm'][batch_idx],
-                                                        torch.tensor(hm_new, dtype=preds_dicts[0]['hm'].dtype, device=preds_dicts[0]['hm'].device))
+            imimg = torch.sigmoid(preds_dicts[0]['hm'][batch_idx].cpu()).numpy().transpose(1,2,0)
+            fig = plt.figure(figsize=(6, 3.2))
+            ax = fig.add_subplot(111)
+            ax.set_title('BEV Image')
+            plt.imshow(imimg)
+            ax.set_aspect('equal')
+            cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
+            cax.get_xaxis().set_visible(False)
+            cax.get_yaxis().set_visible(False)
+            cax.patch.set_alpha(0)
+            cax.set_frame_on(False)
+            plt.savefig("Image_BEV_test_lidar.jpeg")
+            '''
+                   
+            preds_dicts[0]['hm'][batch_idx]= torch.add(torch.sigmoid(preds_dicts[0]['hm'][batch_idx]),
+                                                        torch.tensor(hm_new.copy(), dtype=preds_dicts[0]['hm'].dtype, device=preds_dicts[0]['hm'].device))
+            preds_dicts[0]['hm'][batch_idx] = preds_dicts[0]['hm'][batch_idx]/torch.max(preds_dicts[0]['hm'][batch_idx])
+            '''
+            for chan in range(hm_new.shape[0]):
+                peaks = np.array(np.where(preds_dicts[0]['hm'][batch_idx][chan].cpu() > 0.25)).T
+                if len(peaks) > 0:
+                    clustering = DBSCAN(eps=5,min_samples=2).fit_predict(peaks)
+                    preds_dicts[0]['hm'][batch_idx][chan][peaks.T] = 0
+                    for c in range(max(clustering)+1):
+                        cluster = np.mean(peaks[clustering == c],axis=0).astype(int)
+                        preds_dicts[0]['hm'][batch_idx][chan][cluster[0],cluster[1]] = 1
+            
+            
+            imimg = preds_dicts[0]['hm'][batch_idx].cpu().numpy().transpose(1,2,0)
+            fig = plt.figure(figsize=(6, 3.2))
+            ax = fig.add_subplot(111)
+            ax.set_title('BEV Image')
+            plt.imshow(imimg)
+            ax.set_aspect('equal')
+            cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
+            cax.get_xaxis().set_visible(False)
+            cax.get_yaxis().set_visible(False)
+            cax.patch.set_alpha(0)
+            cax.set_frame_on(False)
+            plt.savefig("Image_BEV_test_lidar_and_cam.jpeg")
+            '''
+            cam_bev_feats.append(cam_feats_new[np.newaxis,...])
             batch_idx+=1
         # get loss info
         rets = []
         metas = []
+        cam_bev_feats = np.concatenate(cam_bev_feats,axis=0)
 
         double_flip = test_cfg.get('double_flip', False)
 
@@ -652,7 +708,7 @@ class CenterHead(nn.Module):
                 if double_flip:
                     meta_list = meta_list[:4*int(batch_size):4]
 
-            batch_hm = torch.sigmoid(preds_dict['hm'])
+            batch_hm = preds_dict['hm'] #torch.sigmoid(preds_dict['hm'])
 
             batch_dim = torch.exp(preds_dict['dim'])
 
@@ -758,7 +814,7 @@ class CenterHead(nn.Module):
             ret['metadata'] = metas[0][i]
             ret_list.append(ret)
 
-        return ret_list 
+        return ret_list, cam_bev_feats
 
 
 

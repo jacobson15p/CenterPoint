@@ -70,7 +70,7 @@ db_sampler = dict(
     db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
-        dict(PEDESTRIAN=0),
+        dict(PEDESTRIAN=10),
         dict(CYCLIST=10),
     ],
     db_prep_steps=[
@@ -131,7 +131,7 @@ val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=6,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,

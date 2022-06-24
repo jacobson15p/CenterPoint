@@ -31,6 +31,7 @@ class Preprocess(object):
     def __init__(self, cfg=None, **kwargs):
         self.shuffle_points = cfg.shuffle_points
         self.min_points_in_gt = cfg.get("min_points_in_gt", -1)
+        self.front_only = True
         
         self.mode = cfg.mode
         if self.mode == "train":
@@ -153,6 +154,12 @@ class Preprocess(object):
             np.random.shuffle(points)
 
         res["lidar"]["points"] = points
+
+        if self.front_only:
+            front_points = points[points[:,0] > 0]
+            arc = np.tan(0.22)
+            front_points = front_points[abs(front_points[:,1]/front_points[:,0]) < arc]
+            res["lidar"]["points"] = front_points
 
         if self.mode == "train":
             res["lidar"]["annotations"] = gt_dict
@@ -405,11 +412,12 @@ class AssignLabel(object):
                 mask_cam = np.zeros((max_objs), dtype=np.uint8)
                 cat_cam = np.zeros((max_objs), dtype=np.int64)
                 dep = np.zeros((max_objs), dtype=np.float32)
+                arc = np.tan(0.22)
 
 
                 num_objs = min(gt_dict['gt_boxes'][idx].shape[0], max_objs)  
                 num_objs_cam = min(len(res['cam']['annotations']['boxes']['FRONT']), max_objs)
-
+                '''
                 for k in range(num_objs_cam):
                     cls_id = class_names_by_task[0].index(res['cam']['annotations']['names']['FRONT'][k])
                     w,h = res['cam']['annotations']['boxes']['FRONT'][k][2:]
@@ -431,7 +439,7 @@ class AssignLabel(object):
                         mask_cam[k] = 1 
                         cat_cam[k] = cls_id
                         dep[k] = res['cam']['annotations']['depth_map'][ct_int[1]][ct_int[0]]
-
+                '''
                 for k in range(num_objs):
                     cls_id = gt_dict['gt_classes'][idx][k] - 1
 
@@ -445,6 +453,9 @@ class AssignLabel(object):
                         # be really careful for the coordinate system of your box annotation. 
                         x, y, z = gt_dict['gt_boxes'][idx][k][0], gt_dict['gt_boxes'][idx][k][1], \
                                   gt_dict['gt_boxes'][idx][k][2]
+
+                        if x <= 0 or abs(y/x) > arc:
+                            continue
 
                         coor_x, coor_y = (x - pc_range[0]) / voxel_size[0] / self.out_size_factor, \
                                          (y - pc_range[1]) / voxel_size[1] / self.out_size_factor
@@ -505,10 +516,12 @@ class AssignLabel(object):
 
             boxes_and_cls = np.concatenate((boxes, 
                 classes.reshape(-1, 1).astype(np.float32)), axis=1)
-            num_obj = len(boxes_and_cls)
-            assert num_obj <= max_objs
             # x, y, z, w, l, h, rotation_y, velocity_x, velocity_y, class_name
             boxes_and_cls = boxes_and_cls[:, [0, 1, 2, 3, 4, 5, 8, 6, 7, 9]]
+            boxes_and_cls = boxes_and_cls[boxes_and_cls[:,0] > 0]
+            boxes_and_cls = boxes_and_cls[abs(boxes_and_cls[:,1]/boxes_and_cls[:,0]) < arc]
+            num_obj = len(boxes_and_cls)
+            assert num_obj <= max_objs
             gt_boxes_and_cls[:num_obj] = boxes_and_cls
 
             #Reformat camera labels into x, y, w, h, class_name
@@ -521,7 +534,7 @@ class AssignLabel(object):
             example.update({'gt_boxes_and_cls': gt_boxes_and_cls})
 
             example.update({'hm': hms, 'anno_box': anno_boxs, 'ind': inds, 'mask': masks, 'cat': cats, 'gt_boxes_cam': gt_boxes_cam, 'hm_cam': hms_cam, 'ind_cam': inds_cam, 'mask_cam': masks_cam,
-                'cat_cam': cats_cam, 'dep': deps, 'dep_map': res['cam']['annotations']['depth_map']},)
+                'cat_cam': cats_cam, 'dep': deps},) 
         else:
             pass
 

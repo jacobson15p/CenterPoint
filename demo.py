@@ -56,7 +56,7 @@ def main():
     
     model = build_detector(cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
 
-    dataset = build_dataset(cfg.data.test)
+    dataset = build_dataset(cfg.data.train)
 
     
     data_loader = DataLoader(

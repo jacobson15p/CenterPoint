@@ -207,6 +207,8 @@ class LoadPointCloudAnnotations(object):
                 "velocities": info["gt_boxes_velocity"].astype(np.float32),
             }
         elif res["type"] == 'WaymoDataset' and "gt_boxes" in info:
+            path = info['anno_path']
+            obj = get_obj(path)
             res["lidar"]["annotations"] = {
                 "boxes": info["gt_boxes"].astype(np.float32),
                 "names": info["gt_names"],
@@ -214,14 +216,7 @@ class LoadPointCloudAnnotations(object):
             res['cam']['annotations'] = {
                 "boxes": info['cam_gt_boxes'],
                 "names": info['cam_gt_names'],
-                #"boxes": {'FRONT': np.array([[int((710.82+802.89)/2),int((180.57+243.25)/2),int(802.89-710.82),int(243.25-180.57)],
-                #[int((624.74+695.15)/2),int((177.50+239.15)/2),int(695.15-624.74),int(239.15-177.50)],
-                #[int((406.67+309.83)/2),int((219.91+179.79)/2),int(406.67-309.83),int(219.91-179.79)],
-                #[int((212.48+187.32)/2),int((73.97+40.56)/2),int(212.48-187.32),int(73.97-40.56)],
-                #[int((639.19+383.87)/2),int((310.56+166.42)/2),int(639.19-383.87),int(310.56-166.42)],
-                #[int((245.86+378.43)/2),int((265.35+199.03)/2),int(378.43-245.86),int(265.35-199.03)]])},
-                #"names": {'FRONT':['PEDESTRIAN','PEDESTRIAN','PEDESTRIAN','PEDESTRIAN','PEDESTRIAN']},
-                "depth_map": info['depth_map']
+                "depth_map": obj['depth_map']
             }
         else:
             pass 

@@ -20,6 +20,9 @@ from waymo_open_dataset.utils import transform_utils
 from waymo_open_dataset.utils import frame_utils
 
 from scipy.interpolate import griddata
+from scipy.spatial import ConvexHull, convex_hull_plot_2d, Delaunay
+from scipy.spatial import cKDTree
+
 
 tf.enable_v2_behavior()
 
@@ -353,11 +356,23 @@ def extract_depth_map(frame):
   v = np.extract(depth[0]!=0,depth[0])
   grid_w,grid_h = np.mgrid[0:1280,0:1920]
   depth_map = griddata(p, v, (grid_w, grid_h), method='nearest')
-  depth_map = depth_map
+  kd_tree = cKDTree(np.array([p[0],p[1]]).T)
+  depth_mask = kd_tree.query(np.array([grid_w,grid_h]).reshape((2,1280*1920)).T,eps=1,p=1,k=1)[0].reshape(1280,1920)
+  depth_mask[depth_mask <= 20] = 1
+  depth_mask[depth_mask > 20] = 100
+  depth_map = depth_map*depth_mask
+  depth_map[depth_map > 100] = 100
 
   return depth_map[0:1280:4,0:1920:4]
 
+def background(image):    
+    points = np.transpose(np.where(image))
+    hull = ConvexHull(points)
+    deln = Delaunay(points[hull.vertices]) 
+    idx = np.stack(np.indices(image.shape), axis = -1)
+    out_idx = deln.find_simplex(idx) < 0
 
+    return out_idx
 
 def convert_range_image_to_cartesian(frame,
                                      range_images,

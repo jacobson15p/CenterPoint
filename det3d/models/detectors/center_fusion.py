@@ -38,6 +38,21 @@ class FusionDetector(BaseDetector):
             self.second_stage.append(builder.build_second_stage_module(module))
 
         self.roi_head = builder.build_roi_head(roi_head)
+
+        self.fusion_head = nn.Sequential(
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+        )
         
         self.num_point = num_point
 
@@ -176,6 +191,7 @@ class FusionDetector(BaseDetector):
         if kwargs.get('use_final_feature', False):
             example['bev_feature'] = final_feature.permute(0, 2, 3, 1).contiguous()
         else:
+            bev_feature = self.fusion_head(bev_feature) + bev_feature
             example['bev_feature'] = bev_feature.permute(0, 2, 3, 1).contiguous()
         
         centers_vehicle_frame = self.get_box_center(one_stage_pred)

@@ -162,6 +162,8 @@ def collate_kitti(batch_list, samples_per_gpu=1):
             for kk, vv in ret[key].items():
                 res.append(torch.stack(vv))
             ret[key] = res
+        elif key == "dep_map":
+            ret[key] = torch.tensor(np.stack(elems, axis=0))
         elif key in ['gt_boxes_and_cls']:
             ret[key] = torch.tensor(np.stack(elems, axis=0))
         else:

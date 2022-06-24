@@ -1,0 +1,26 @@
+2022-06-20 18:57:19,398 - INFO - Start running, host: root@540167a4385b, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_yiyang
+2022-06-20 18:57:19,398 - INFO - workflow: [('train', 1)], max: 6 epochs
+2022-06-20 18:57:27,846 - INFO - Epoch [1/6][5/8783]	lr: 0.00030, eta: 1 day, 0:43:15, time: 1.689, data_time: 1.365, transfer_time: 0.043, forward_time: 0.199, loss_parse_time: 0.000 memory: 1506, 
+2022-06-20 18:57:27,846 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.6193, hm_loss: 0.0000, loc_loss: 0.9861, loc_loss_elem: ['0.1637', '0.1405', '0.1022', '0.1040', '0.1436', '0.0736', '0.1131', '0.1453'], num_positive: 11.8000, roi_reg_loss: 0.0000, roi_cls_loss: 0.6472
+
+2022-06-20 18:57:31,005 - INFO - Epoch [1/6][10/8783]	lr: 0.00030, eta: 16:58:20, time: 0.630, data_time: 0.340, transfer_time: 0.044, forward_time: 0.171, loss_parse_time: 0.000 memory: 1517, 
+2022-06-20 18:57:31,005 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.4819, hm_loss: 0.0000, loc_loss: 0.9679, loc_loss_elem: ['0.1427', '0.1193', '0.0928', '0.0900', '0.1232', '0.0767', '0.1915', '0.1317'], num_positive: 25.2000, roi_reg_loss: 0.0000, roi_cls_loss: 0.5461
+
+2022-06-20 18:57:33,478 - INFO - Epoch [1/6][15/8783]	lr: 0.00030, eta: 13:44:02, time: 0.496, data_time: 0.202, transfer_time: 0.050, forward_time: 0.166, loss_parse_time: 0.000 memory: 1517, 
+2022-06-20 18:57:33,478 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.5471, hm_loss: 0.0000, loc_loss: 1.0497, loc_loss_elem: ['0.1326', '0.1368', '0.1020', '0.1210', '0.1478', '0.0865', '0.1813', '0.1416'], num_positive: 20.6000, roi_reg_loss: 0.0000, roi_cls_loss: 0.4477
+
+2022-06-20 18:57:36,700 - INFO - Epoch [1/6][20/8783]	lr: 0.00030, eta: 12:39:23, time: 0.644, data_time: 0.340, transfer_time: 0.049, forward_time: 0.175, loss_parse_time: 0.000 memory: 1523, 
+2022-06-20 18:57:36,700 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.7192, hm_loss: 0.0000, loc_loss: 1.1657, loc_loss_elem: ['0.1478', '0.1471', '0.1208', '0.1074', '0.1142', '0.0911', '0.2455', '0.1917'], num_positive: 25.8000, roi_reg_loss: 0.0000, roi_cls_loss: 0.3878
+
+2022-06-20 18:57:39,945 - INFO - Epoch [1/6][25/8783]	lr: 0.00030, eta: 12:01:24, time: 0.649, data_time: 0.363, transfer_time: 0.047, forward_time: 0.159, loss_parse_time: 0.000 memory: 1523, 
+2022-06-20 18:57:39,945 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 1.7252, hm_loss: 0.0000, loc_loss: 0.6905, loc_loss_elem: ['0.1363', '0.1241', '0.0870', '0.0577', '0.0674', '0.0659', '0.0942', '0.0580'], num_positive: 15.2000, roi_reg_loss: 0.0000, roi_cls_loss: 0.3443
+
+2022-06-20 18:57:42,471 - INFO - Epoch [1/6][30/8783]	lr: 0.00030, eta: 11:14:57, time: 0.505, data_time: 0.207, transfer_time: 0.051, forward_time: 0.164, loss_parse_time: 0.000 memory: 1523, 
+2022-06-20 18:57:42,471 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.2395, hm_loss: 0.0000, loc_loss: 0.9811, loc_loss_elem: ['0.1466', '0.1082', '0.1271', '0.0957', '0.1463', '0.0809', '0.1654', '0.1108'], num_positive: 20.8000, roi_reg_loss: 0.0000, roi_cls_loss: 0.2772
+
+2022-06-20 18:57:45,800 - INFO - Epoch [1/6][35/8783]	lr: 0.00030, eta: 11:01:53, time: 0.665, data_time: 0.314, transfer_time: 0.049, forward_time: 0.226, loss_parse_time: 0.000 memory: 1523, 
+2022-06-20 18:57:45,801 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.5876, hm_loss: 0.0000, loc_loss: 1.1563, loc_loss_elem: ['0.1736', '0.1663', '0.1471', '0.0914', '0.1370', '0.1104', '0.1822', '0.1484'], num_positive: 19.2000, roi_reg_loss: 0.0000, roi_cls_loss: 0.2749
+
+2022-06-20 18:57:49,125 - INFO - Epoch [1/6][40/8783]	lr: 0.00030, eta: 10:52:06, time: 0.665, data_time: 0.274, transfer_time: 0.048, forward_time: 0.261, loss_parse_time: 0.000 memory: 1535, 
+2022-06-20 18:57:49,125 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.0621, hm_loss: 0.0000, loc_loss: 0.9163, loc_loss_elem: ['0.1545', '0.1280', '0.0896', '0.0728', '0.1133', '0.0757', '0.1478', '0.1345'], num_positive: 17.2000, roi_reg_loss: 0.0000, roi_cls_loss: 0.2296
+

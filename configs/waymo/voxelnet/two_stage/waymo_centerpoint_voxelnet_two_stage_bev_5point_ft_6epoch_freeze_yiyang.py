@@ -19,7 +19,7 @@ model = dict(
     type='TwoStageDetector',
     first_stage_cfg=dict(
         type="VoxelNet",
-        pretrained='/code/CenterPoint/pretrained_weights/epoch_36.pth',
+        pretrained='/code/CenterPoint/pretrained_weights/voxelnet_3x_epoch_36.pth',
         reader=dict(
             type="VoxelFeatureExtractorV3",
             num_input_features=5
@@ -159,6 +159,7 @@ train_preprocessor = dict(
     global_scale_noise=[0.95, 1.05],
     db_sampler=db_sampler,
     class_names=class_names,
+    no_augmentation=True,
 )
 
 val_preprocessor = dict(
@@ -170,7 +171,8 @@ voxel_generator = dict(
     range=[-75.2, -75.2, -2, 75.2, 75.2, 4],
     voxel_size=[0.1, 0.1, 0.15],
     max_points_in_voxel=5,
-    max_voxel_num=[150000, 200000]
+    max_voxel_num=[150000, 200000],
+    out_size_factor=get_downsample_factor(model),
 )
 
 train_pipeline = [
@@ -192,11 +194,11 @@ test_pipeline = [
 
 train_anno = "/waymo_data/infos_train_01sweeps_filter_zero_gt.pkl"
 val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
-test_anno = None
+test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=4,
-    workers_per_gpu=4,
+    samples_per_gpu=6,
+    workers_per_gpu=3,
     train=dict(
         type=dataset_type,
         root_path=data_root,

@@ -1,0 +1,15 @@
+2022-04-22 05:14:06,212 - INFO - load checkpoint from work_dirs/waymo_centernet_dla34/epoch_2.pth
+2022-04-22 05:14:06,435 - INFO - Start running, host: root@56c00c0c5623, work_dir: /code/CenterPoint/work_dirs/waymo_centernet_dla34_constant_lr
+2022-04-22 05:14:06,435 - INFO - workflow: [('train', 1)], max: 6 epochs
+2022-04-22 05:14:36,114 - INFO - Epoch [1/6][5/8783]	lr: 0.00005, eta: 3 days, 14:51:31, time: 5.934, data_time: 2.382, transfer_time: 0.080, forward_time: 0.825, loss_parse_time: 0.000 memory: 26222, 
+2022-04-22 05:14:36,114 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 11.6477, hm_loss: 7.9924, dep_loss: 3.6553, num_positive: 135.8000
+
+2022-04-22 05:14:54,214 - INFO - Epoch [1/6][10/8783]	lr: 0.00005, eta: 2 days, 21:55:13, time: 3.621, data_time: 0.073, transfer_time: 0.074, forward_time: 0.801, loss_parse_time: 0.000 memory: 26222, 
+2022-04-22 05:14:54,214 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 5.0527, hm_loss: 2.0853, dep_loss: 2.9674, num_positive: 137.4000
+
+2022-04-22 05:15:12,500 - INFO - Epoch [1/6][15/8783]	lr: 0.00005, eta: 2 days, 16:26:48, time: 3.657, data_time: 0.076, transfer_time: 0.077, forward_time: 0.808, loss_parse_time: 0.000 memory: 26225, 
+2022-04-22 05:15:12,500 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.2390, hm_loss: 1.3935, dep_loss: 1.8455, num_positive: 129.4000
+
+2022-04-22 05:15:30,876 - INFO - Epoch [1/6][20/8783]	lr: 0.00005, eta: 2 days, 13:46:33, time: 3.675, data_time: 0.072, transfer_time: 0.077, forward_time: 0.821, loss_parse_time: 0.000 memory: 26226, 
+2022-04-22 05:15:30,877 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.2823, hm_loss: 0.9502, dep_loss: 1.3321, num_positive: 125.0000
+

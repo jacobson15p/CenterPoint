@@ -1,2 +1,0 @@
-2022-02-18 19:52:43,152 - INFO - Start running, host: root@032c02c28a04, work_dir: /code/CenterPoint/work_dirs/waymo_centernet_dla34
-2022-02-18 19:52:43,153 - INFO - workflow: [('train', 1)], max: 12 epochs

@@ -479,6 +479,7 @@ class DLASegv2(nn.Module):
         self.ida_up(y, 0, len(y))
 
         z = {}
+        z['feature_map'] = y[-1]
         for head in self.heads:
             z[head] = self.__getattr__(head)(y[-1])
         return [z]

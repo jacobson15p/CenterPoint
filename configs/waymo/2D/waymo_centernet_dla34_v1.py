@@ -70,7 +70,7 @@ db_sampler = dict(
     db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
-        dict(PEDESTRIAN=0),
+        dict(PEDESTRIAN=10),
         dict(CYCLIST=10),
     ],
     db_prep_steps=[
@@ -131,7 +131,7 @@ val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=6,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
@@ -169,10 +169,10 @@ optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
 
 # optimizer
 optimizer = dict(
-    type="adam", amsgrad=0.0, wd=0.01, fixed_wd=True, moving_average=False,
+    type="Adam", lr=5e-5,amsgrad=False, weight_decay=0.01,
 )
 lr_config = dict(
-    type="one_cycle", lr_max=0.003, moms=[0.95, 0.85], div_factor=10.0, pct_start=0.4,
+    type="manual_stepping"
 )
 
 checkpoint_config = dict(interval=1)
@@ -186,7 +186,7 @@ log_config = dict(
 )
 # yapf:enable
 # runtime settings
-total_epochs = 36
+total_epochs = 6
 device_ids = range(8)
 dist_params = dict(backend="nccl", init_method="env://")
 log_level = "INFO"
@@ -194,3 +194,4 @@ work_dir = './work_dirs/{}/'.format(__file__[__file__.rfind('/') + 1:-3])
 load_from = None 
 resume_from = None  
 workflow = [('train', 1)]
+drop_step = [2000]

@@ -31,6 +31,7 @@ class Reformat(object):
                 hm_pixel_size=res['hm_pixel_size'],
                 feature_map_size=res['feature_map_size'],
                 range=res['range'],
+                dep_map=res['cam']['annotations']['depth_map']
             )
 
         if 'voxels' in res["lidar"]:

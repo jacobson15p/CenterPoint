@@ -75,6 +75,10 @@ def _create_pd_detection(detections, infos, result_path, tracking=False):
             tracking_ids = detection['tracking_ids']
 
         for i in range(box3d.shape[0]):
+            if box3d[i][0] < 0:
+                continue
+            if abs(box3d[i][1]/box3d[i][0]) > np.tan(0.22):
+                continue
             det  = box3d[i]
             score = scores[i]
 
@@ -137,6 +141,10 @@ def _create_gt_detection(infos, tracking=True):
         box3d = box3d[:, [0, 1, 2, 3, 4, 5, -1]]
 
         for i in range(box3d.shape[0]):
+            if box3d[i][0] < 0:
+                continue
+            if abs(box3d[i][1]/box3d[i][0]) > np.tan(0.22):
+                continue
             if num_points_in_gt[i] == 0:
                 continue 
             if names[i] == 'UNKNOWN':
@@ -169,7 +177,7 @@ def _create_gt_detection(infos, tracking=True):
             objects.objects.append(o)
         
     # Write objects to a file.
-    f = open(os.path.join(args.result_path, 'gt_preds.bin'), 'wb')
+    f = open(os.path.join(args.result_path, 'gt_preds_full_front.bin'), 'wb')
     f.write(objects.SerializeToString())
     f.close()
 
@@ -285,7 +293,7 @@ def _fill_infos(root_path, frames, split='train', nsweeps=1):
             info['gt_names'] = gt_names[mask_not_zero].astype(str)
 
             #get ground truth depth maps
-            info['depth_map'] = ref_obj['depth_map']
+            #info['depth_map'] = ref_obj['depth_map']
 
         infos.append(info)
     return infos

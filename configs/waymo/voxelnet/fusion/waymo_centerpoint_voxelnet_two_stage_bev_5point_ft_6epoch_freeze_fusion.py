@@ -60,7 +60,7 @@ model = dict(
     image_head_cfg=dict(
     type="DddHead",
     tasks=tasks,
-    pretrained='/code/CenterPoint/pretrained_weights/centernet_epoch_12.pth',
+    pretrained='/code/CenterPoint/work_dirs/waymo_centernet_dla34_v1/epoch_6.pth',
     backbone=dict(
         type="DLASegv2",
         base_name='dla34',
@@ -75,7 +75,7 @@ model = dict(
 
     roi_head=dict(
         type="RoIHead",
-        input_channels=512*5,
+        input_channels=576*5,
         model_cfg=dict(
             CLASS_AGNOSTIC=True,
             SHARED_FC=[256, 256],
@@ -153,7 +153,7 @@ db_sampler = dict(
     db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
-        dict(PEDESTRIAN=0),
+        dict(PEDESTRIAN=10),
         dict(CYCLIST=10),
     ],
     db_prep_steps=[
@@ -177,6 +177,7 @@ train_preprocessor = dict(
     global_scale_noise=[0.95, 1.05],
     db_sampler=db_sampler,
     class_names=class_names,
+    no_augmentation=True,
 )
 
 val_preprocessor = dict(
@@ -214,7 +215,7 @@ val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=6,
     workers_per_gpu=3,
     train=dict(
         type=dataset_type,

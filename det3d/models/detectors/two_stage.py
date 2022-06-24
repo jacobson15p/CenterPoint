@@ -158,10 +158,10 @@ class TwoStageDetector(BaseDetector):
         if len(out) == 5:
             one_stage_pred, bev_feature, voxel_feature, final_feature, one_stage_loss = out 
             example['voxel_feature'] = voxel_feature
-            print("USED 5")
+            #print("USED 5")
         elif len(out) == 3:
             one_stage_pred, bev_feature, one_stage_loss = out 
-            print("USED 3")
+            #print("USED 3")
         else:
             raise NotImplementedError
 
