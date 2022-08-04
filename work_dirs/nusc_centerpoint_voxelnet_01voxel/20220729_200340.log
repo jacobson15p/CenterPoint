@@ -1,0 +1,2 @@
+2022-07-29 20:03:40,738 - INFO - Start running, host: root@93420dabe2e1, work_dir: /code/CenterPoint/work_dirs/nusc_centerpoint_voxelnet_01voxel
+2022-07-29 20:03:40,738 - INFO - workflow: [('train', 1)], max: 20 epochs

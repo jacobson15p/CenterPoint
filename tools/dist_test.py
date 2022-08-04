@@ -181,7 +181,6 @@ def main():
                 prog_bar.update()
 
     synchronize()
-
     all_predictions = all_gather(detections)
 
     print("\n Total time per frame: ", (time_end -  time_start) / (end - start))

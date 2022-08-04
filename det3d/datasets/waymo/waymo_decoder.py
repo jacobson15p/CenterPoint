@@ -23,6 +23,7 @@ from scipy.interpolate import griddata
 from scipy.spatial import ConvexHull, convex_hull_plot_2d, Delaunay
 from scipy.spatial import cKDTree
 
+from det3d.datasets.utils.depth_map_utils import fill_in_multiscale
 
 tf.enable_v2_behavior()
 
@@ -352,6 +353,9 @@ def extract_depth_map(frame):
   range_images_cartesian = convert_range_image_to_cartesian(frame,range_images,range_image_top_pose)
   cam_projection = (np.array(camera_projections[1][0].data).reshape(64,2650,6))[np.newaxis,...]
   depth = range_image_utils.build_camera_depth_image(range_images_cartesian[1][np.newaxis,...],extrinsic[np.newaxis,...],cam_projection ,[1280,1920],1)
+  depth_map = fill_in_multiscale(np.array(depth[0]),extrapolate=False,blur_type='bilateral')[0]
+  depth_map[depth_map == 0] = 100
+  '''
   p = np.where(depth[0]!= 0)
   v = np.extract(depth[0]!=0,depth[0])
   grid_w,grid_h = np.mgrid[0:1280,0:1920]
@@ -362,7 +366,7 @@ def extract_depth_map(frame):
   depth_mask[depth_mask > 20] = 100
   depth_map = depth_map*depth_mask
   depth_map[depth_map > 100] = 100
-
+  '''
   return depth_map[0:1280:4,0:1920:4]
 
 def background(image):    

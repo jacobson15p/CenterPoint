@@ -131,7 +131,7 @@ class BaseHead(nn.Module):
     super(BaseHead, self).__init__()
     print('Creating model...')
     self.model = builder.build_backbone(backbone)
-    #elf.model = load_model(self.model,'/code/CenterPoint/pretrained_weights/ddd_3dop.pth')
+    #self.model = load_model(self.model,'pretrained_weights/nuScenes_3Ddetection_e140.pth')
     #self.model.to(torch.device('cuda'))
 
     self.mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(1, 1, 3)

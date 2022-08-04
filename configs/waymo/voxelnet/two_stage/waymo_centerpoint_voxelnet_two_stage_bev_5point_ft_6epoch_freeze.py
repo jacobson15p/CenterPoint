@@ -19,7 +19,7 @@ model = dict(
     type='TwoStageDetector',
     first_stage_cfg=dict(
         type="VoxelNet",
-        pretrained='work_dirs/waymo_centerpoint_voxelnet_3x/epoch_36.pth',
+        pretrained='/code/CenterPoint/pretrained_weights/voxelnet_3x_epoch_36.pth',
         reader=dict(
             type="VoxelFeatureExtractorV3",
             num_input_features=5
@@ -100,6 +100,7 @@ assigner = dict(
     gaussian_overlap=0.1,
     max_objs=500,
     min_radius=2,
+    cam_down_ratio=4,
 )
 
 
@@ -126,12 +127,12 @@ test_cfg = dict(
 # dataset settings
 dataset_type = "WaymoDataset"
 nsweeps = 1
-data_root = "data/Waymo"
+data_root = "/waymo_data"
 
 db_sampler = dict(
     type="GT-AUG",
     enable=False,
-    db_info_path="data/Waymo/dbinfos_train_1sweeps_withvelo.pkl",
+    db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
         dict(PEDESTRIAN=10),
@@ -170,7 +171,8 @@ voxel_generator = dict(
     range=[-75.2, -75.2, -2, 75.2, 75.2, 4],
     voxel_size=[0.1, 0.1, 0.15],
     max_points_in_voxel=5,
-    max_voxel_num=[150000, 200000]
+    max_voxel_num=[150000, 200000],
+    out_size_factor=get_downsample_factor(model),
 )
 
 train_pipeline = [
@@ -195,7 +197,7 @@ val_anno = "/waymo_data/infos_val_01sweeps_filter_zero_gt.pkl"
 test_anno = "/waymo_data/infos_test_01sweeps_filter_zero_gt.pkl"
 
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=6,
     workers_per_gpu=3,
     train=dict(
         type=dataset_type,

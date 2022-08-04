@@ -135,7 +135,7 @@ db_sampler = dict(
     db_info_path="/waymo_data/dbinfos_train_1sweeps_withvelo.pkl",
     sample_groups=[
         dict(VEHICLE=15),
-        dict(PEDESTRIAN=0),
+        dict(PEDESTRIAN=10),
         dict(CYCLIST=10),
     ],
     db_prep_steps=[
@@ -253,7 +253,7 @@ log_config = dict(
 )
 # yapf:enable
 # runtime settings
-total_epochs = 6
+total_epochs = 1
 device_ids = range(8)
 dist_params = dict(backend="nccl", init_method="env://")
 log_level = "INFO"

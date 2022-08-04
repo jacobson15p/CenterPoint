@@ -126,9 +126,17 @@ class LoadPointCloudFromFile(object):
 
             nsweeps = res["lidar"]["nsweeps"]
 
+
             lidar_path = Path(info["lidar_path"])
             points = read_file(str(lidar_path), virtual=res["virtual"])
-
+            
+            res["cam"]["images"] = {}
+            res["calib"] = {}
+            count = 0
+            for path in info["all_cams_path"]:
+                res["calib"][path[23:23+path[23:].find('/')]] = info["all_cams_intrinsic"][count]
+                count += 1
+                res["cam"]["images"][path[23:23+path[23:].find('/')]] = np.asarray(Image.open(str(path)))
 
             sweep_points_list = [points]
             sweep_times_list = [np.zeros((points.shape[0], 1))]
@@ -147,6 +155,17 @@ class LoadPointCloudFromFile(object):
 
             points = np.concatenate(sweep_points_list, axis=0)
             times = np.concatenate(sweep_times_list, axis=0).astype(points.dtype)
+
+            #projected_points = projectionV2(to_tensor(points[:,:3]),to_batch_tensor(info['all_cams_from_lidar']),to_batch_tensor(info['all_cams_intrinsic']))
+            #for i in range(6):
+            #    depth_map = np.zeros((900,1600))
+            #    p = projected_points[i,projected_points[i,:,3] == 1][:,[1,0]].long().numpy()
+            #    depth_map[p[:,0],p[:,1]] = projected_points[i,projected_points[i,:,3] == 1,2]
+            #    depth_map = fill_in_multiscale(depth_map,extrapolate=False,blur_type='bilateral')[0]
+            #    #plt.figure(i)
+            #    #plt.imshow(depth_map)
+            #    #plt.savefig('depth_%s'%i)
+
 
             res["lidar"]["points"] = points
             res["lidar"]["times"] = times

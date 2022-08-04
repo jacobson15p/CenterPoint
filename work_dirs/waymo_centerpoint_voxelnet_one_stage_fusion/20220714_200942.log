@@ -1,0 +1,29 @@
+2022-07-14 20:09:42,925 - INFO - Start running, host: root@229eb8513f83, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_one_stage_fusion
+2022-07-14 20:09:42,925 - INFO - workflow: [('train', 1)], max: 1 epochs
+2022-07-14 20:10:11,659 - INFO - Epoch [1/1][5/8783]	lr: 0.00030, eta: 14:00:30, time: 5.745, data_time: 2.296, transfer_time: 0.045, forward_time: 2.052, loss_parse_time: 0.000 memory: 13782, 
+2022-07-14 20:10:11,659 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 17.3088, hm_loss: 7.1449, loc_loss: 5.0819, loc_loss_elem: ['0.4973', '0.5262', '0.9107', '0.4338', '0.9570', '0.5065', '0.8136', '0.4369'], num_positive: 50.4000
+
+2022-07-14 20:10:29,007 - INFO - Epoch [1/1][10/8783]	lr: 0.00030, eta: 11:13:40, time: 3.470, data_time: 0.061, transfer_time: 0.041, forward_time: 1.974, loss_parse_time: 0.000 memory: 13782, 
+2022-07-14 20:10:29,007 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 12.6745, hm_loss: 2.6353, loc_loss: 5.0196, loc_loss_elem: ['0.4862', '0.5278', '0.8654', '0.4580', '0.9378', '0.4851', '0.7853', '0.4741'], num_positive: 74.8000
+
+2022-07-14 20:10:45,998 - INFO - Epoch [1/1][15/8783]	lr: 0.00030, eta: 10:14:23, time: 3.398, data_time: 0.058, transfer_time: 0.042, forward_time: 1.896, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:10:45,998 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 13.1105, hm_loss: 2.6333, loc_loss: 5.2386, loc_loss_elem: ['0.4676', '0.5130', '0.9973', '0.4705', '0.9992', '0.5265', '0.7722', '0.4922'], num_positive: 73.4000
+
+2022-07-14 20:11:03,094 - INFO - Epoch [1/1][20/8783]	lr: 0.00030, eta: 9:45:22, time: 3.419, data_time: 0.062, transfer_time: 0.042, forward_time: 1.921, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:11:03,094 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 12.4184, hm_loss: 2.4561, loc_loss: 4.9811, loc_loss_elem: ['0.4995', '0.5188', '0.9432', '0.4322', '0.8173', '0.5182', '0.7660', '0.4860'], num_positive: 85.0000
+
+2022-07-14 20:11:20,376 - INFO - Epoch [1/1][25/8783]	lr: 0.00030, eta: 9:28:55, time: 3.456, data_time: 0.058, transfer_time: 0.042, forward_time: 1.955, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:11:20,376 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 13.3101, hm_loss: 2.6824, loc_loss: 5.3139, loc_loss_elem: ['0.4967', '0.5100', '0.9426', '0.4892', '1.0795', '0.5446', '0.7816', '0.4698'], num_positive: 51.6000
+
+2022-07-14 20:11:37,601 - INFO - Epoch [1/1][30/8783]	lr: 0.00030, eta: 9:17:36, time: 3.445, data_time: 0.059, transfer_time: 0.042, forward_time: 1.956, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:11:37,602 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 12.6068, hm_loss: 2.4609, loc_loss: 5.0729, loc_loss_elem: ['0.4838', '0.5074', '0.9528', '0.4595', '0.9342', '0.4931', '0.7856', '0.4565'], num_positive: 75.6000
+
+2022-07-14 20:11:55,118 - INFO - Epoch [1/1][35/8783]	lr: 0.00030, eta: 9:10:38, time: 3.503, data_time: 0.055, transfer_time: 0.040, forward_time: 1.924, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:11:55,118 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 12.9233, hm_loss: 2.5420, loc_loss: 5.1906, loc_loss_elem: ['0.4746', '0.5221', '0.9851', '0.4776', '1.0028', '0.5025', '0.7844', '0.4416'], num_positive: 69.2000
+
+2022-07-14 20:12:12,746 - INFO - Epoch [1/1][40/8783]	lr: 0.00030, eta: 9:05:45, time: 3.526, data_time: 0.056, transfer_time: 0.041, forward_time: 1.934, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:12:12,746 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 12.8453, hm_loss: 2.5015, loc_loss: 5.1719, loc_loss_elem: ['0.4897', '0.5157', '0.8580', '0.4802', '1.0490', '0.5104', '0.7322', '0.5366'], num_positive: 66.4000
+
+2022-07-14 20:12:30,148 - INFO - Epoch [1/1][45/8783]	lr: 0.00030, eta: 9:01:09, time: 3.480, data_time: 0.060, transfer_time: 0.041, forward_time: 1.974, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:12:30,149 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 12.4627, hm_loss: 2.4546, loc_loss: 5.0041, loc_loss_elem: ['0.4991', '0.5164', '0.9960', '0.3959', '0.8475', '0.5049', '0.7892', '0.4552'], num_positive: 73.2000
+

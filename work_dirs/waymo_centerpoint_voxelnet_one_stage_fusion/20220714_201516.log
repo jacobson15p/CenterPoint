@@ -1,0 +1,17 @@
+2022-07-14 20:15:16,936 - INFO - Start running, host: root@229eb8513f83, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_one_stage_fusion
+2022-07-14 20:15:16,936 - INFO - workflow: [('train', 1)], max: 1 epochs
+2022-07-14 20:15:45,784 - INFO - Epoch [1/1][5/8783]	lr: 0.00030, eta: 14:03:48, time: 5.768, data_time: 2.356, transfer_time: 0.051, forward_time: 2.006, loss_parse_time: 0.000 memory: 13782, 
+2022-07-14 20:15:45,784 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 11.6951, hm_loss: 10.0168, loc_loss: 0.8391, loc_loss_elem: ['0.1053', '0.0810', '0.1017', '0.0757', '0.0968', '0.0679', '0.1494', '0.1613'], num_positive: 50.4000
+
+2022-07-14 20:16:02,508 - INFO - Epoch [1/1][10/8783]	lr: 0.00030, eta: 11:06:12, time: 3.345, data_time: 0.046, transfer_time: 0.041, forward_time: 1.922, loss_parse_time: 0.000 memory: 13782, 
+2022-07-14 20:16:02,508 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 10.7663, hm_loss: 9.2085, loc_loss: 0.7789, loc_loss_elem: ['0.1017', '0.0857', '0.0693', '0.0861', '0.1069', '0.0624', '0.1536', '0.1132'], num_positive: 74.8000
+
+2022-07-14 20:16:19,638 - INFO - Epoch [1/1][15/8783]	lr: 0.00030, eta: 10:10:45, time: 3.426, data_time: 0.056, transfer_time: 0.041, forward_time: 1.926, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:16:19,638 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 10.8082, hm_loss: 9.2085, loc_loss: 0.7998, loc_loss_elem: ['0.1000', '0.0927', '0.0844', '0.0757', '0.0933', '0.0696', '0.1579', '0.1262'], num_positive: 73.4000
+
+2022-07-14 20:16:36,656 - INFO - Epoch [1/1][20/8783]	lr: 0.00030, eta: 9:42:05, time: 3.404, data_time: 0.061, transfer_time: 0.041, forward_time: 1.918, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:16:36,656 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 11.0065, hm_loss: 9.2085, loc_loss: 0.8990, loc_loss_elem: ['0.1087', '0.0924', '0.0899', '0.0891', '0.1120', '0.0662', '0.1867', '0.1540'], num_positive: 85.0000
+
+2022-07-14 20:16:53,636 - INFO - Epoch [1/1][25/8783]	lr: 0.00030, eta: 9:24:32, time: 3.396, data_time: 0.055, transfer_time: 0.043, forward_time: 1.921, loss_parse_time: 0.000 memory: 13849, 
+2022-07-14 20:16:53,636 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 10.7512, hm_loss: 9.2085, loc_loss: 0.7713, loc_loss_elem: ['0.0973', '0.0944', '0.0784', '0.0734', '0.0936', '0.0660', '0.1199', '0.1485'], num_positive: 51.6000
+

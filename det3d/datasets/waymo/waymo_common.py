@@ -77,7 +77,7 @@ def _create_pd_detection(detections, infos, result_path, tracking=False):
         for i in range(box3d.shape[0]):
             if box3d[i][0] < 0:
                 continue
-            if abs(box3d[i][1]/box3d[i][0]) > np.tan(0.22):
+            if abs(box3d[i][1]/box3d[i][0]) > np.tan(0.45):
                 continue
             det  = box3d[i]
             score = scores[i]
@@ -143,7 +143,7 @@ def _create_gt_detection(infos, tracking=True):
         for i in range(box3d.shape[0]):
             if box3d[i][0] < 0:
                 continue
-            if abs(box3d[i][1]/box3d[i][0]) > np.tan(0.22):
+            if abs(box3d[i][1]/box3d[i][0]) > np.tan(0.45):
                 continue
             if num_points_in_gt[i] == 0:
                 continue 
@@ -177,7 +177,7 @@ def _create_gt_detection(infos, tracking=True):
             objects.objects.append(o)
         
     # Write objects to a file.
-    f = open(os.path.join(args.result_path, 'gt_preds_full_front.bin'), 'wb')
+    f = open(os.path.join(args.result_path, 'gt_preds_small_front.bin'), 'wb')
     f.write(objects.SerializeToString())
     f.close()
 

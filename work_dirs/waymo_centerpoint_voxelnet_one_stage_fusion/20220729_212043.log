@@ -1,0 +1,4 @@
+2022-07-29 21:20:43,323 - INFO - load checkpoint from work_dirs/waymo_centerpoint_voxelnet_one_stage_fusion/epoch_1.pth
+2022-07-29 21:20:44,317 - INFO - resumed epoch 1, iter 8783
+2022-07-29 21:20:44,319 - INFO - Start running, host: root@229eb8513f83, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_one_stage_fusion
+2022-07-29 21:20:44,320 - INFO - workflow: [('train', 1)], max: 6 epochs

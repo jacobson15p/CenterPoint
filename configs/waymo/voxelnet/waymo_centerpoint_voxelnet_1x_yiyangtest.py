@@ -125,6 +125,7 @@ voxel_generator = dict(
     voxel_size=[0.1, 0.1, 0.15],
     max_points_in_voxel=5,
     max_voxel_num=150000,
+    out_size_factor=get_downsample_factor(model),
 )
 
 train_pipeline = [
@@ -150,7 +151,7 @@ test_anno = None
 
 data = dict(
     samples_per_gpu=4,
-    workers_per_gpu=4,
+    workers_per_gpu=3,
     train=dict(
         type=dataset_type,
         root_path=data_root,

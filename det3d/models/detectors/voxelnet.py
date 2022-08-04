@@ -109,11 +109,51 @@ class VoxelNet(SingleStageDetector):
                     new_pred[k] = v.detach() # will not have the gradient again. 
                 new_preds.append(new_pred)
 
-            boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, new_preds,image_out, self.test_cfg)
-            bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
-
+            #boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, new_preds,image_out, self.test_cfg)
+            #bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
+            cam_bev_feats = self.bbox_head.projection_forward(example ,image_out, self.test_cfg)
+            bev_feature = self.bbox_head.fusion_forward(bev_feature,cam_bev_feats)
+            #new_preds[0]['hm'] = fusion_hm
+            boxes = self.bbox_head.fusion_predict(example, new_preds , self.test_cfg)
             return boxes, bev_feature, voxel_feature, final_feat, self.bbox_head.loss(example, preds, self.test_cfg)
         else:
-            boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, preds, image_out, self.test_cfg)
-            bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
+            #boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, preds, image_out, self.test_cfg)
+            #bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
+            cam_bev_feats = self.bbox_head.projection_forward(example ,image_out, self.test_cfg)
+            bev_feature = self.bbox_head.fusion_forward(bev_feature,cam_bev_feats)
+            #preds[0]['hm'] = fusion_hm
+            boxes = self.bbox_head.fusion_predict(example, preds , self.test_cfg)
             return boxes, bev_feature, voxel_feature, final_feat, None 
+
+
+    def forward_with_trans_fusion(self, example, image_out, return_loss=True, **kwargs):
+        x, voxel_feature = self.extract_feat(example)
+        bev_feature = x 
+        preds, final_feat = self.bbox_head(x)
+
+        # Preds only come with the HM and stuff, not the full prediction, considering adding something here 
+
+        if return_loss:
+            # manual deepcopy ...
+            new_preds = []
+            for pred in preds:
+                new_pred = {} 
+                for k, v in pred.items():
+                    new_pred[k] = v.detach() # will not have the gradient again. 
+                new_preds.append(new_pred)
+
+            #boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, new_preds,image_out, self.test_cfg)
+            #bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
+            cam_bev_feats, bev_pos = self.bbox_head.projection_forward(example ,image_out, self.test_cfg)
+            bev_feature = torch.cat((bev_feature,cam_bev_feats.to(bev_feature)),axis=1)
+            #new_preds[0]['hm'] = fusion_hm
+            boxes = self.bbox_head.fusion_predict(example, new_preds , bev_feature, self.test_cfg)
+            return boxes, bev_feature, bev_pos, voxel_feature, final_feat, self.bbox_head.loss(example, preds, self.test_cfg)
+        else:
+            #boxes, cam_bev_feats = self.bbox_head.predict_with_fusion(example, preds, image_out, self.test_cfg)
+            #bev_feature = torch.cat((bev_feature,torch.tensor(cam_bev_feats,device=bev_feature.get_device())),axis=1).float()
+            cam_bev_feats, bev_pos = self.bbox_head.projection_forward(example ,image_out, self.test_cfg)
+            bev_feature = torch.cat((bev_feature,cam_bev_feats.to(bev_feature)),axis=1)
+            #preds[0]['hm'] = fusion_hm
+            boxes = self.bbox_head.fusion_predict(example, preds , bev_feature, self.test_cfg)
+            return boxes, bev_feature, bev_pos, voxel_feature, final_feat, None 

@@ -1,0 +1,2 @@
+2022-07-23 01:38:32,606 - INFO - Start running, host: root@229eb8513f83, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_transfusion
+2022-07-23 01:38:32,606 - INFO - workflow: [('train', 1)], max: 1 epochs

@@ -157,7 +157,7 @@ class Preprocess(object):
 
         if self.front_only:
             front_points = points[points[:,0] > 0]
-            arc = np.tan(0.22)
+            arc = np.tan(0.45)
             front_points = front_points[abs(front_points[:,1]/front_points[:,0]) < arc]
             res["lidar"]["points"] = front_points
 
@@ -412,7 +412,7 @@ class AssignLabel(object):
                 mask_cam = np.zeros((max_objs), dtype=np.uint8)
                 cat_cam = np.zeros((max_objs), dtype=np.int64)
                 dep = np.zeros((max_objs), dtype=np.float32)
-                arc = np.tan(0.22)
+                arc = np.tan(0.45)
 
 
                 num_objs = min(gt_dict['gt_boxes'][idx].shape[0], max_objs)  

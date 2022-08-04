@@ -59,6 +59,7 @@ assigner = dict(
     gaussian_overlap=0.1,
     max_objs=500,
     min_radius=2,
+    cam_down_ratio=4,
 )
 
 
@@ -81,12 +82,12 @@ test_cfg = dict(
 # dataset settings
 dataset_type = "NuScenesDataset"
 nsweeps = 10
-data_root = "data/nuScenes"
+data_root = "/data_nuscenes"
 
 db_sampler = dict(
     type="GT-AUG",
     enable=False,
-    db_info_path="data/nuScenes/dbinfos_train_10sweeps_withvelo.pkl",
+    db_info_path="/nuscenes_data/dbinfos_train_10sweeps_withvelo.pkl",
     sample_groups=[
         dict(car=2),
         dict(truck=3),
@@ -138,6 +139,7 @@ voxel_generator = dict(
     voxel_size=[0.1, 0.1, 0.2],
     max_points_in_voxel=10,
     max_voxel_num=[90000, 120000],
+    out_size_factor=get_downsample_factor(model),
 )
 
 train_pipeline = [
@@ -157,8 +159,8 @@ test_pipeline = [
     dict(type="Reformat"),
 ]
 
-train_anno = "data/nuScenes/infos_train_10sweeps_withvelo_filter_True.pkl"
-val_anno = "data/nuScenes/infos_val_10sweeps_withvelo_filter_True.pkl"
+train_anno = "/nuscenes_data/infos_train_10sweeps_withvelo_filter_True.pkl"
+val_anno = "/nuscenes_data/infos_val_10sweeps_withvelo_filter_True.pkl"
 test_anno = None
 
 data = dict(

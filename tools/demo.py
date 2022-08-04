@@ -54,16 +54,17 @@ def convert_box(info):
 
 
 def main():
-    cfg = Config.fromfile('configs/waymo/voxelnet/fusion/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_fusion.py')
+    #cfg = Config.fromfile('configs/waymo/voxelnet/fusion/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_fusion.py')
     #cfg = Config.fromfile('configs/waymo/voxelnet/waymo_centerpoint_voxelnet_1x.py')
-    #cfg = Config.fromfile('configs/waymo/2D/waymo_centernet_dla34.py')
+    cfg = Config.fromfile('configs/nusc/2D/nuscenes_centernet_dla34.py')
     
     model = build_detector(cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
-    #checkpoint = load_checkpoint(model, 'work_dirs/waymo_centernet_dla34/epoch_2.pth', map_location="cpu")
+    #checkpoint = load_checkpoint(model, 'pretrained_weights/nuScenes_3Ddetection_e140.pth', map_location="cpu")
+    #model.load_state_dict(torch.load('pretrained_weights/nuScenes_3Ddetection_e140.pth')['state_dict'])
     model = model.cuda()
     model.eval()
-
-    dataset = build_dataset(cfg.data.train)
+    
+    dataset = build_dataset(cfg.data.val)
 
     
     data_loader = DataLoader(
@@ -75,10 +76,9 @@ def main():
         collate_fn=collate_kitti,
         pin_memory=False,
     )
-
     for i,data_batch in enumerate(data_loader):
-        if i != 0:
-            continue
+        #if i != 400:
+        #    continue
         #plt.imshow(data_batch['hm'][0][0].permute(1,2,0))
         #plt.savefig('hm_gt')
         #plt.figure(1)
@@ -106,9 +106,9 @@ def main():
         plt.imshow((data_batch['images'][0].permute(1,2,0))*std+mean)
         #plt.imshow(dep_pred[0].permute(1,2,0))
         plt.savefig('image_test.png')
-        #plt.figure(3)
-        #plt.imshow(data_batch['dep_map'][0])
-        #plt.savefig('/waymo_data/hm_test_images/depth_gt_%s'%(i//300))
+        plt.figure(3)
+        plt.imshow(data_batch['dep_map'][0])
+        plt.savefig('ip_depth_test.png')
         #plt.figure(4)
         #plt.imshow(data_batch['images'][0].permute(1,2,0))
         #plt.savefig('/waymo_data/hm_test_images/image_%s'%(i//300))

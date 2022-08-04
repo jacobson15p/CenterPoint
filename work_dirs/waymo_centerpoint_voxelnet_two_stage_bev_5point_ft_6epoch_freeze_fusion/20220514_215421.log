@@ -1,5 +1,0 @@
-2022-05-14 21:54:21,863 - INFO - Start running, host: root@38c34f86dda2, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_fusion
-2022-05-14 21:54:21,863 - INFO - workflow: [('train', 1)], max: 6 epochs
-2022-05-14 21:56:25,143 - INFO - Epoch [1/6][5/133]	lr: 0.00005, eta: 5:25:49, time: 24.653, data_time: 1.100, transfer_time: 0.075, forward_time: 23.119, loss_parse_time: 0.000 memory: 10649, 
-2022-05-14 21:56:25,143 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.9546, hm_loss: 0.0000, loc_loss: 0.6066, loc_loss_elem: ['0.1032', '0.0887', '0.0813', '0.0609', '0.0619', '0.0660', '0.0615', '0.0832'], num_positive: 178.8000, roi_reg_loss: 0.9572, roi_cls_loss: 0.7842
-

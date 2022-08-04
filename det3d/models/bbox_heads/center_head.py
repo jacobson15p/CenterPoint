@@ -199,6 +199,29 @@ class CenterHead(nn.Module):
         self.crit = FastFocalLoss()
         self.crit_reg = RegLoss()
 
+        
+        self.fusion_head = nn.Sequential(
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+            nn.Conv2d(576,576,kernel_size=7,padding='same'),
+            nn.BatchNorm2d(576),
+            nn.ReLU(),
+        )
+        self.hm_head = nn.Sequential(
+            nn.Conv2d(576,64,kernel_size=3,padding='same'),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.Conv2d(64,3,kernel_size=3,padding='same'),
+        )
+        self.hm_head[-1].bias.data.fill_(-2.19)
+        
         # YZ Notes 
         # common_heads is the 
         # common_heads={'reg': (2, 2), 'height': (1, 2), 'dim':(3, 2), 'rot':(2, 2), 'vel':(2,2)}, # (output_channel, num_conv)
@@ -262,8 +285,8 @@ class CenterHead(nn.Module):
 
             #print(preds_dict['hm'].shape,example['hm'][task_id].shape, example['ind'][task_id].shape, example['mask'][task_id].shape, example['cat'][task_id].shape)
 
-            #hm_loss = self.crit(preds_dict['hm'], example['hm'][task_id], example['ind'][task_id], example['mask'][task_id], example['cat'][task_id])
-            hm_loss = torch.tensor([0]).cuda()
+            hm_loss = self.crit(preds_dict['hm'], example['hm'][task_id], example['ind'][task_id], example['mask'][task_id], example['cat'][task_id])
+            #hm_loss = torch.tensor([0]).cuda()
             #ind (batch x max_objects) get the object location, and only work with the category 
 
             target_box = example['anno_box'][task_id]
@@ -454,7 +477,6 @@ class CenterHead(nn.Module):
                     ret[k] = torch.cat([ret[i][k] for ret in rets])
 
             ret['metadata'] = metas[0][i]
-            ret['hm'] = torch.sigmoid(preds_dict['hm'])
             ret_list.append(ret)
 
         return ret_list 
@@ -509,7 +531,7 @@ class CenterHead(nn.Module):
             #for cam_hm, cam_dep, front_intrinsic, front_extrinsic, viewrangemeters, feature_map_size, hm_pixel_size in zip(example['hm_cam'][0].cpu().numpy(), 
             #        example['dep_map'][np.newaxis,...], front_intrinsics.cpu().numpy(), front_extrinsics.cpu().numpy(),
             #        example['range'], example['feature_map_size'], example['hm_pixel_size']):
-
+            
             # Assuming the down ratio is 4. 
             front_intrinsic/=4
             # USE THIS FOR RESULT 
@@ -520,35 +542,34 @@ class CenterHead(nn.Module):
             # pixel_unproject= np.array(np.meshgrid(np.linspace(1,cam_dep.shape[1],cam_dep.shape[1]),
             #                             np.linspace(1,cam_dep.shape[0],cam_dep.shape[0]))).T.reshape(-1, 2)
 
-
+            
             pixel_depth= cam_dep.T.reshape(-1,1)
             pixel_unproject[:,0]= (pixel_unproject[:,0]- front_intrinsic[2]) / front_intrinsic[0]
             pixel_unproject[:,1]= (pixel_unproject[:,1]- front_intrinsic[3]) / front_intrinsic[1]
-            for i in range(pixel_unproject.shape[0]):
-                if pixel_depth[i] is not None:
-                    pixel_unproject[i] = pixel_unproject[i] * pixel_depth[i][0]
-                else:
-                    pixel_unproject[i] = pixel_unproject[i] * 999
+            pixel_unproject= pixel_unproject*pixel_depth[:,0:1]
             pixel_unproject= np.hstack((pixel_unproject,pixel_depth))
 
+            nonzero_mask = cam_hm[0].T.reshape(-1) > 1
+            class_thresholds = [0.9,0.7,0.1]
+            for channel_idx in range(cam_hm.shape[0]):
+                nonzero_mask = (cam_hm[channel_idx].T.reshape(-1) > class_thresholds[channel_idx]) | nonzero_mask
+            pixel_unproject_subset = pixel_unproject[nonzero_mask,:]
+            
             rotation_axis= np.array([[0,0,1],
                                     [1,0,0],
                                     [0,1,0]])
-            pixel_unproject= (rotation_axis @ pixel_unproject.T)
-            pixel_unproject= ((front_extrinsic[0:3,0:3] @ pixel_unproject) +  np.expand_dims(front_extrinsic[0:3,3], axis=1)).T          
-
+            pixel_unproject_subset= (rotation_axis @ pixel_unproject_subset.T)
+            pixel_unproject_subset= ((front_extrinsic[0:3,0:3] @ pixel_unproject_subset) +  np.expand_dims(front_extrinsic[0:3,3], axis=1)).T    
+            pixel_unproject[nonzero_mask,:] = pixel_unproject_subset      
+            
             # Now x is pointing towards forward, y to left, and z up 
 
             pixel_unproject/=hm_pixel_size
             
             hm_new= np.zeros((cam_hm.shape[0], feature_map_size[0], feature_map_size[1]))
             cam_feats_new = np.zeros((cam_features.shape[0], feature_map_size[0], feature_map_size[1]))
-            
+
             valid_mask = (pixel_unproject[:,0]< feature_map_size[0]/2) & (pixel_unproject[:,0]> 0) & (pixel_unproject[:,1]< feature_map_size[1]/2) & (pixel_unproject[:,1]> -feature_map_size[1]/2)
-            nonzero_mask = cam_hm[0].T.reshape(-1) > 1
-            class_thresholds = [0.9,0.8,0.1]
-            for channel_idx in range(cam_hm.shape[0]):
-                nonzero_mask = (cam_hm[channel_idx].T.reshape(-1) > class_thresholds[channel_idx]) | nonzero_mask
             valid_mask = nonzero_mask.numpy() & valid_mask
             
             valid_length = np.sum(valid_mask)
@@ -567,10 +588,10 @@ class CenterHead(nn.Module):
             pixel_unproject = pixel_unproject[valid_mask,:]
             pixel_unproject[:,0] = (-1*pixel_unproject[:,0] + feature_map_size[0]/2)
             pixel_unproject[:,1] = (pixel_unproject[:,1] + feature_map_size[1]/2)
-            hm_new[:,pixel_unproject[:,0].astype(int),pixel_unproject[:,1].astype(int)] = pixel_with_taskHM[chans_hm,:]
+            #hm_new[:,pixel_unproject[:,0].astype(int),pixel_unproject[:,1].astype(int)] = pixel_with_taskHM[chans_hm,:]
             cam_feats_new[:,pixel_unproject[:,0].astype(int),pixel_unproject[:,1].astype(int)] = pixel_with_taskfeat[chans_feats,:]
 
-            hm_new = np.flip(np.rot90(hm_new,k=3,axes=(1,2)),axis=1)
+            #hm_new = np.flip(np.rot90(hm_new,k=3,axes=(1,2)),axis=1)
             cam_feats_new = np.flip(np.rot90(cam_feats_new,k=3,axes=(1,2)),axis=1)
 
             # Visualization code part
@@ -637,16 +658,6 @@ class CenterHead(nn.Module):
                                                         torch.tensor(hm_new.copy(), dtype=preds_dicts[0]['hm'].dtype, device=preds_dicts[0]['hm'].device))
             preds_dicts[0]['hm'][batch_idx] = preds_dicts[0]['hm'][batch_idx]/torch.max(preds_dicts[0]['hm'][batch_idx])
             '''
-            for chan in range(hm_new.shape[0]):
-                peaks = np.array(np.where(preds_dicts[0]['hm'][batch_idx][chan].cpu() > 0.25)).T
-                if len(peaks) > 0:
-                    clustering = DBSCAN(eps=5,min_samples=2).fit_predict(peaks)
-                    preds_dicts[0]['hm'][batch_idx][chan][peaks.T] = 0
-                    for c in range(max(clustering)+1):
-                        cluster = np.mean(peaks[clustering == c],axis=0).astype(int)
-                        preds_dicts[0]['hm'][batch_idx][chan][cluster[0],cluster[1]] = 1
-            
-            
             imimg = preds_dicts[0]['hm'][batch_idx].cpu().numpy().transpose(1,2,0)
             fig = plt.figure(figsize=(6, 3.2))
             ax = fig.add_subplot(111)
@@ -816,9 +827,260 @@ class CenterHead(nn.Module):
 
         return ret_list, cam_bev_feats
 
+    @torch.no_grad()
+    def projection_forward(self, example, image_out, test_cfg, **kwargs):
+        """decode, nms, then return the detection result. Additionaly support double flip testing
+        Added image_output as well for fusion in heat map (hm) and possibly other features  
+        """
 
+        front_intrinsics= example['calib']['FRONT_INTRINSIC']
+        front_extrinsics= example['calib']['FRONT_EXTRINSIC']
 
+        # USE THIS FOR RESULT 
+        cam_bev_feats = []
+        batch_idx=0
+        for cam_hm, cam_dep, cam_features, front_intrinsic, front_extrinsic, viewrangemeters, feature_map_size, hm_pixel_size in zip(image_out['results']['hm'].cpu(), 
+            example['dep_map'][:,np.newaxis,...].cpu().numpy(),image_out['results']['feature_map'].cpu(), front_intrinsics.cpu().numpy(), front_extrinsics.cpu().numpy(),
+            example['range'], example['feature_map_size'], example['hm_pixel_size']):
 
+            # USE THIS FOR EXAMPLE TESTING 
+            #for cam_hm, cam_dep, front_intrinsic, front_extrinsic, viewrangemeters, feature_map_size, hm_pixel_size in zip(example['hm_cam'][0].cpu().numpy(), 
+            #        example['dep_map'][np.newaxis,...], front_intrinsics.cpu().numpy(), front_extrinsics.cpu().numpy(),
+            #        example['range'], example['feature_map_size'], example['hm_pixel_size']):
+            
+            # Assuming the down ratio is 4. 
+            front_intrinsic/=4
+            # USE THIS FOR RESULT 
+            
+            pixel_unproject= np.array(np.meshgrid(np.linspace(1,cam_dep.shape[2],cam_dep.shape[2]),
+                                        np.linspace(1,cam_dep.shape[1],cam_dep.shape[1]))).T.reshape(-1, 2)
+            # USE THIS FOR EXAMPLE TESTING 
+            # pixel_unproject= np.array(np.meshgrid(np.linspace(1,cam_dep.shape[1],cam_dep.shape[1]),
+            #                             np.linspace(1,cam_dep.shape[0],cam_dep.shape[0]))).T.reshape(-1, 2)
+
+            
+            pixel_depth= cam_dep.T.reshape(-1,1)
+            pixel_unproject[:,0]= (pixel_unproject[:,0]- front_intrinsic[2]) / front_intrinsic[0]
+            pixel_unproject[:,1]= (pixel_unproject[:,1]- front_intrinsic[3]) / front_intrinsic[1]
+            pixel_unproject= pixel_unproject*pixel_depth[:,0:1]
+            pixel_unproject= np.hstack((pixel_unproject,pixel_depth))
+
+            nonzero_mask = cam_hm[0].T.reshape(-1) > 1
+            class_thresholds = [0.9,0.8,0.1]
+            for channel_idx in range(cam_hm.shape[0]):
+                nonzero_mask = (cam_hm[channel_idx].T.reshape(-1) > class_thresholds[channel_idx]) | nonzero_mask
+            pixel_unproject_subset = pixel_unproject[nonzero_mask,:]
+            
+            rotation_axis= np.array([[0,0,1],
+                                    [1,0,0],
+                                    [0,1,0]])
+            pixel_unproject_subset= (rotation_axis @ pixel_unproject_subset.T)
+            pixel_unproject_subset= ((front_extrinsic[0:3,0:3] @ pixel_unproject_subset) +  np.expand_dims(front_extrinsic[0:3,3], axis=1)).T    
+            pixel_unproject[nonzero_mask,:] = pixel_unproject_subset      
+            
+            # Now x is pointing towards forward, y to left, and z up 
+
+            pixel_unproject/=hm_pixel_size
+            
+            hm_new= np.zeros((cam_hm.shape[0], feature_map_size[0], feature_map_size[1]))
+            cam_feats_new = np.zeros((cam_features.shape[0], feature_map_size[0], feature_map_size[1]))
+
+            valid_mask = (pixel_unproject[:,0]< feature_map_size[0]/2) & (pixel_unproject[:,0]> 0) & (pixel_unproject[:,1]< feature_map_size[1]/2) & (pixel_unproject[:,1]> -feature_map_size[1]/2)
+            valid_mask = nonzero_mask.numpy() & valid_mask
+            
+            valid_length = np.sum(valid_mask)
+            #pixel_with_taskHM= cam_hm.T.reshape(cam_hm.shape[0],-1)[:,0:valid_length]
+            pixel_with_taskHM = np.zeros((cam_hm.shape[0],valid_length))
+            for channel_idx in range(cam_hm.shape[0]):
+                pixel_with_taskHM[channel_idx] = cam_hm[channel_idx].T.reshape(-1)[valid_mask]
+
+            #pixel_with_taskfeat= cam_features.T.reshape(cam_features.shape[0],-1,1)[:,0:valid_length,0]
+            pixel_with_taskfeat = np.zeros((cam_features.shape[0],valid_length))
+            for channel_idx in range(cam_features.shape[0]):
+                pixel_with_taskfeat[channel_idx] = cam_features[channel_idx].T.reshape(-1)[valid_mask]
+            
+            #chans_hm = np.arange(0,cam_hm.shape[0],1)
+            chans_feats = np.arange(0,cam_features.shape[0],1)
+            pixel_unproject = pixel_unproject[valid_mask,:]
+            pixel_unproject[:,0] = (-1*pixel_unproject[:,0] + feature_map_size[0]/2)
+            pixel_unproject[:,1] = (pixel_unproject[:,1] + feature_map_size[1]/2)
+            #hm_new[:,pixel_unproject[:,0].astype(int),pixel_unproject[:,1].astype(int)] = pixel_with_taskHM[chans_hm,:]
+            cam_feats_new[:,pixel_unproject[:,0].astype(int),pixel_unproject[:,1].astype(int)] = pixel_with_taskfeat[chans_feats,:]
+
+            #hm_new = np.flip(np.rot90(hm_new,k=3,axes=(1,2)),axis=1)
+            cam_feats_new = np.flip(np.rot90(cam_feats_new,k=3,axes=(1,2)),axis=1)
+
+            #preds_dicts[0]['hm'][batch_idx]= torch.add(torch.sigmoid(preds_dicts[0]['hm'][batch_idx]),
+            #                                            torch.tensor(hm_new.copy(), dtype=preds_dicts[0]['hm'].dtype, device=preds_dicts[0]['hm'].device))
+            #preds_dicts[0]['hm'][batch_idx] = preds_dicts[0]['hm'][batch_idx]/torch.max(preds_dicts[0]['hm'][batch_idx])
+
+            cam_bev_feats.append(cam_feats_new[np.newaxis,...])
+            batch_idx+=1
+        
+        cam_bev_feats = np.concatenate(cam_bev_feats,axis=0)
+
+        return torch.tensor(cam_bev_feats)
+
+    def fusion_forward(self, bev_feat, cam_feat, **kwargs):
+        fusion_feat = torch.cat((bev_feat,cam_feat.to(bev_feat)),axis=1)
+        fusion_feat = self.fusion_head(fusion_feat) + fusion_feat
+        #fusion_hm = self.hm_head(fusion_feat)
+        #fusion_hm = cam_feat[:,:3,...].to(bev_feat)
+        
+        return fusion_feat #, fusion_hm
+
+    def fusion_predict(self, example, preds_dicts, test_cfg, **kwargs):
+        rets = []
+        metas = []
+
+        double_flip = test_cfg.get('double_flip', False)
+
+        post_center_range = test_cfg.post_center_limit_range
+        if len(post_center_range) > 0:
+            post_center_range = torch.tensor(
+                post_center_range,
+                dtype=preds_dicts[0]['hm'].dtype,
+                device=preds_dicts[0]['hm'].device,
+            )
+
+        for task_id, preds_dict in enumerate(preds_dicts):
+            # convert N C H W to N H W C 
+            for key, val in preds_dict.items():
+                preds_dict[key] = val.permute(0, 2, 3, 1).contiguous()
+
+            batch_size = preds_dict['hm'].shape[0]
+
+            if double_flip:
+                assert batch_size % 4 == 0, print(batch_size)
+                batch_size = int(batch_size / 4)
+                for k in preds_dict.keys():
+                    # transform the prediction map back to their original coordinate befor flipping
+                    # the flipped predictions are ordered in a group of 4. The first one is the original pointcloud
+                    # the second one is X flip pointcloud(y=-y), the third one is Y flip pointcloud(x=-x), and the last one is 
+                    # X and Y flip pointcloud(x=-x, y=-y).
+                    # Also please note that pytorch's flip function is defined on higher dimensional space, so dims=[2] means that
+                    # it is flipping along the axis with H length(which is normaly the Y axis), however in our traditional word, it is flipping along
+                    # the X axis. The below flip follows pytorch's definition yflip(y=-y) xflip(x=-x)
+                    _, H, W, C = preds_dict[k].shape
+                    preds_dict[k] = preds_dict[k].reshape(int(batch_size), 4, H, W, C)
+                    preds_dict[k][:, 1] = torch.flip(preds_dict[k][:, 1], dims=[1]) 
+                    preds_dict[k][:, 2] = torch.flip(preds_dict[k][:, 2], dims=[2])
+                    preds_dict[k][:, 3] = torch.flip(preds_dict[k][:, 3], dims=[1, 2])
+
+            if "metadata" not in example or len(example["metadata"]) == 0:
+                meta_list = [None] * batch_size
+            else:
+                meta_list = example["metadata"]
+                if double_flip:
+                    meta_list = meta_list[:4*int(batch_size):4]
+
+            batch_hm = torch.sigmoid(preds_dict['hm'])
+
+            batch_dim = torch.exp(preds_dict['dim'])
+
+            batch_rots = preds_dict['rot'][..., 0:1]
+            batch_rotc = preds_dict['rot'][..., 1:2]
+            batch_reg = preds_dict['reg']
+            batch_hei = preds_dict['height']
+
+            if double_flip:
+                batch_hm = batch_hm.mean(dim=1)
+                batch_hei = batch_hei.mean(dim=1)
+                batch_dim = batch_dim.mean(dim=1)
+
+                # y = -y reg_y = 1-reg_y
+                batch_reg[:, 1, ..., 1] = 1 - batch_reg[:, 1, ..., 1]
+                batch_reg[:, 2, ..., 0] = 1 - batch_reg[:, 2, ..., 0]
+
+                batch_reg[:, 3, ..., 0] = 1 - batch_reg[:, 3, ..., 0]
+                batch_reg[:, 3, ..., 1] = 1 - batch_reg[:, 3, ..., 1]
+                batch_reg = batch_reg.mean(dim=1)
+
+                # first yflip 
+                # y = -y theta = pi -theta
+                # sin(pi-theta) = sin(theta) cos(pi-theta) = -cos(theta)
+                # batch_rots[:, 1] the same
+                batch_rotc[:, 1] *= -1
+
+                # then xflip x = -x theta = 2pi - theta
+                # sin(2pi - theta) = -sin(theta) cos(2pi - theta) = cos(theta)
+                # batch_rots[:, 2] the same
+                batch_rots[:, 2] *= -1
+
+                # double flip 
+                batch_rots[:, 3] *= -1
+                batch_rotc[:, 3] *= -1
+
+                batch_rotc = batch_rotc.mean(dim=1)
+                batch_rots = batch_rots.mean(dim=1)
+
+            batch_rot = torch.atan2(batch_rots, batch_rotc)
+
+            batch, H, W, num_cls = batch_hm.size()
+
+            batch_reg = batch_reg.reshape(batch, H*W, 2)
+            batch_hei = batch_hei.reshape(batch, H*W, 1)
+
+            batch_rot = batch_rot.reshape(batch, H*W, 1)
+            batch_dim = batch_dim.reshape(batch, H*W, 3)
+            batch_hm = batch_hm.reshape(batch, H*W, num_cls)
+
+            ys, xs = torch.meshgrid([torch.arange(0, H), torch.arange(0, W)])
+            ys = ys.view(1, H, W).repeat(batch, 1, 1).to(batch_hm)
+            xs = xs.view(1, H, W).repeat(batch, 1, 1).to(batch_hm)
+
+            xs = xs.view(batch, -1, 1) + batch_reg[:, :, 0:1]
+            ys = ys.view(batch, -1, 1) + batch_reg[:, :, 1:2]
+
+            xs = xs * test_cfg.out_size_factor * test_cfg.voxel_size[0] + test_cfg.pc_range[0]
+            ys = ys * test_cfg.out_size_factor * test_cfg.voxel_size[1] + test_cfg.pc_range[1]
+
+            if 'vel' in preds_dict:
+                batch_vel = preds_dict['vel']
+
+                if double_flip:
+                    # flip vy
+                    batch_vel[:, 1, ..., 1] *= -1
+                    # flip vx
+                    batch_vel[:, 2, ..., 0] *= -1
+
+                    batch_vel[:, 3] *= -1
+                    
+                    batch_vel = batch_vel.mean(dim=1)
+
+                batch_vel = batch_vel.reshape(batch, H*W, 2)
+                batch_box_preds = torch.cat([xs, ys, batch_hei, batch_dim, batch_vel, batch_rot], dim=2)
+            else: 
+                batch_box_preds = torch.cat([xs, ys, batch_hei, batch_dim, batch_rot], dim=2)
+
+            metas.append(meta_list)
+
+            if test_cfg.get('per_class_nms', False):
+                pass 
+            else:
+                rets.append(self.post_processing(batch_box_preds, batch_hm, test_cfg, post_center_range, task_id)) 
+
+        # Merge branches results
+        ret_list = []
+        num_samples = len(rets[0])
+
+        ret_list = []
+        for i in range(num_samples):
+            ret = {}
+            for k in rets[0][i].keys():
+                if k in ["box3d_lidar", "scores"]:
+                    ret[k] = torch.cat([ret[i][k] for ret in rets])
+                elif k in ["label_preds"]:
+                    flag = 0
+                    for j, num_class in enumerate(self.num_classes):
+                        rets[j][i][k] += flag
+                        flag += num_class
+                    ret[k] = torch.cat([ret[i][k] for ret in rets])
+
+            ret['metadata'] = metas[0][i]
+            ret_list.append(ret)
+
+        return ret_list
 
     @torch.no_grad()
     def post_processing(self, batch_box_preds, batch_hm, test_cfg, post_center_range, task_id):

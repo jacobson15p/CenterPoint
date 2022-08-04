@@ -28,8 +28,12 @@ class FusionDetector(BaseDetector):
             print("Freeze First Stage Network")
             # we train the model in two steps 
             self.single_det = self.single_det.freeze()
-            self.image_head.freeze()
+            self.image_head = self.image_head.freeze()
         self.bbox_head = self.single_det.bbox_head
+        for p in self.bbox_head.fusion_head.parameters():
+            p.requires_grad = True
+        #for p in self.bbox_head.hm_head.parameters():
+        #    p.requires_grad = True
 
         self.second_stage = nn.ModuleList()
         # can be any number of modules 
@@ -39,20 +43,6 @@ class FusionDetector(BaseDetector):
 
         self.roi_head = builder.build_roi_head(roi_head)
 
-        self.fusion_head = nn.Sequential(
-            nn.Conv2d(576,576,kernel_size=7,padding='same'),
-            nn.BatchNorm2d(576),
-            nn.ReLU(),
-            nn.Conv2d(576,576,kernel_size=7,padding='same'),
-            nn.BatchNorm2d(576),
-            nn.ReLU(),
-            nn.Conv2d(576,576,kernel_size=7,padding='same'),
-            nn.BatchNorm2d(576),
-            nn.ReLU(),
-            nn.Conv2d(576,576,kernel_size=7,padding='same'),
-            nn.BatchNorm2d(576),
-            nn.ReLU(),
-        )
         
         self.num_point = num_point
 
@@ -191,7 +181,7 @@ class FusionDetector(BaseDetector):
         if kwargs.get('use_final_feature', False):
             example['bev_feature'] = final_feature.permute(0, 2, 3, 1).contiguous()
         else:
-            bev_feature = self.fusion_head(bev_feature) + bev_feature
+            #bev_feature[:,512:,:,:] = self.fusion_head(bev_feature[:,512:,:,:]) + bev_feature[:,512:,:,:]
             example['bev_feature'] = bev_feature.permute(0, 2, 3, 1).contiguous()
         
         centers_vehicle_frame = self.get_box_center(one_stage_pred)

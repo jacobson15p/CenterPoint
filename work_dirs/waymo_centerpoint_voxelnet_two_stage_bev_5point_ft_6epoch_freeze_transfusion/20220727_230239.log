@@ -1,0 +1,8 @@
+2022-07-27 23:02:39,272 - INFO - Start running, host: root@229eb8513f83, work_dir: /code/CenterPoint/work_dirs/waymo_centerpoint_voxelnet_two_stage_bev_5point_ft_6epoch_freeze_transfusion
+2022-07-27 23:02:39,272 - INFO - workflow: [('train', 1)], max: 1 epochs
+2022-07-27 23:02:47,272 - INFO - Epoch [1/1][5/52694]	lr: 0.00030, eta: 23:23:12, time: 1.598, data_time: 1.150, transfer_time: 0.009, forward_time: 0.360, loss_parse_time: 0.000 memory: 3477, 
+2022-07-27 23:02:47,272 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 3.3651, hm_loss: 0.3360, loc_loss: 0.6710, loc_loss_elem: ['0.1348', '0.0825', '0.0914', '0.0719', '0.0768', '0.0689', '0.0841', '0.0605'], num_positive: 15.0000, roi_reg_loss: 1.0157, roi_cls_loss: 0.6714
+
+2022-07-27 23:02:49,607 - INFO - Epoch [1/1][10/52694]	lr: 0.00030, eta: 15:06:22, time: 0.467, data_time: 0.015, transfer_time: 0.007, forward_time: 0.363, loss_parse_time: 0.000 memory: 3489, 
+2022-07-27 23:02:49,607 - INFO - task : ['VEHICLE', 'PEDESTRIAN', 'CYCLIST'], loss: 2.5347, hm_loss: 0.2284, loc_loss: 0.4761, loc_loss_elem: ['0.0998', '0.0756', '0.0741', '0.0542', '0.0483', '0.0769', '0.0125', '0.0348'], num_positive: 9.6000, roi_reg_loss: 0.9054, roi_cls_loss: 0.4488
+
